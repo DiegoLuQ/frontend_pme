@@ -22,7 +22,7 @@ const DiegoPortales = () => {
       {dataColegio.map((item, index) => (
         <div className="flex items-center justify-between" key={item._id}>
           <Link
-            to={`/${params.m_c}/${params.year}/${item._id}`}
+            to={`/${params.d_p}/${params.year}/${item._id}`}
             className="flex px-5 justify-between items-center mt-2"
             key={item._id}
           >

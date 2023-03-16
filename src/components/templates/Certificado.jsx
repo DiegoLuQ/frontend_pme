@@ -90,7 +90,7 @@ function Certificado() {
           </div>
           <hr className="" />
           <div className="text-end">
-            <p className="text-3xl font-bold mr-4">PME 2022</p>
+            <p className="text-3xl font-bold mr-4">PME {params.year}</p>
           </div>
           <div className="mt-4 m-auto">
             <h1 className="font-bold text-4xl text-center my-10">

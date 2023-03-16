@@ -39,7 +39,7 @@ console.log(dataColegio)
 
           <Link
             to={`/${params.m_c}/${params.year}/${item._id}`}
-            className="hidder md:block px-2 bg-teal-700 hover:bg-teal-600 rounded-lg font-semibold text-white"
+            className="hidden md:block px-2 bg-teal-700 hover:bg-teal-600 rounded-lg font-semibold text-white"
           >
             Ver
           </Link>
