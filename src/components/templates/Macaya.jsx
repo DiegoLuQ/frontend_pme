@@ -30,7 +30,7 @@ console.log(dataColegio)
           className="flex px-5 justify-between items-center mt-2"
           key={item._id}
         >
-          <Link to={`/${params.m_c}/${item._id}`} className="flex gap-2 hover:bg-gray-300 duration-300 ease-in-out hover:rounded-lg rounded-lg px-2 w-[100%]">
+          <Link to={`/${params.m_c}/${params.year}/${item._id}`} className="flex gap-2 hover:bg-gray-300 duration-300 ease-in-out hover:rounded-lg rounded-lg px-2 w-[100%]">
             <p>{index + 1}</p>
             <p className="text-green-600 hover:text-green-800 cursor-pointer ">
               {item.nombre_accion}
