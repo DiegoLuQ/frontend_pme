@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+
+  web_sf_3:
+    build:
+      context: .
+    environment:
+      - VITE_API=${VITE_API}
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - VIRTUAL_PORT=${VIRTUAL_PORT}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
+    ports:
+      - 8005:80
+
+networks:
+  default:
+    name: web_private_red_webapps
+    external: true
