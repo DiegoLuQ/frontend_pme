@@ -6,6 +6,7 @@ import { Home } from "../components/webpages/Home";
 import Macaya from "../components/templates/Macaya";
 import DiegoPortales from "../components/templates/DiegoPortales";
 import Certificado from "../components/templates/Certificado";
+import DetailAct from "../components/templates/DetailAct";
 
 
 const router = createBrowserRouter ([
@@ -23,20 +24,25 @@ const router = createBrowserRouter ([
                 element:<Colegios />
             },
             {
-                path:'/:colegio/:year/:id',
-                element:<Actividades />
-            },
-            {
                 path:'/colegio_dp/:year/:d_p/:id',
                 element:<DiegoPortales />
             },
             {
-                path:'/colegio_mc/:year/:m_c/:id',
+                // ACCIONES
+                path:'/colegios/:colegio/pme/:year/:id',
                 element:<Macaya />
             },
             {
-                path:'/:colegio/:year/certificado_pme/:id',
+                path:'/colegios/:colegio/actividades/:year/:id',
+                element:<Actividades />
+            },
+            {
+                path:'/colegios/:colegio/certificado/:year/:id',
                 element:<Certificado />
+            },
+            {
+                path:'/colegios/:name_colegio/detalles/:year/:id',
+                element:<DetailAct />
             },
             
         ]

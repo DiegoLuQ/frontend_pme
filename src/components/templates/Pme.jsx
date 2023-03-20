@@ -17,11 +17,7 @@ const Pme = ({ colegio, id }) => {
         {data.map((item) => (
             <Link
             key={item._id}
-            to={
-              colegio== "Macaya"
-                ? `/colegio_mc/${item.year}/${colegio}/${item._id}`
-                : `/colegio_dp/${item.year}/${colegio}/${item._id}`
-            }
+            to={`/colegios/${colegio}/pme/${item.year}/${item._id}`}
             className={
               colegio== "Macaya"
                 ? "text-base font-semibold py-1 text-green-500 rounded-md hover:bg-gray-700 px-1"

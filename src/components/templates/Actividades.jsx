@@ -11,7 +11,7 @@ const Actividades = () => {
   const { data, error, loading } = useFetch(
     `accion/actividades/?id=${params.id}`
   );
-
+    console.log(params)
   useEffect(() => {
     if (data) {
       setActividades(data[0].actividades);
@@ -50,7 +50,7 @@ const Actividades = () => {
             Agregar actividad
           </Link>
           
-          <Link to={`/${params.colegio}/${params.year}/certificado_pme/${params.id}`} className="text-center bg-cyan-600 hover:bg-cyan-500 text-white py-1 md:w-[18%] rounded-lg mt-2 font-bold">
+          <Link to={`/colegios/${params.colegio}/certificado/${params.year}/${params.id}`} className="text-center bg-cyan-600 hover:bg-cyan-500 text-white py-1 md:w-[18%] rounded-lg mt-2 font-bold">
             Ver Certificado
           </Link>
         </div>
