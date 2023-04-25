@@ -9,31 +9,23 @@ const DetailAct = () => {
   const { data, error, loading } = useFetch(
     `actividades/actividad_de_acciones/${params.id}`
   );
-
+  console.log('id: ' + params.id)
   useEffect(() => {
     if (data) {
       setDetalles(data);
       console.log(detalles)
-      setRecursos(data.map((item) => item.detallt_lista));
+      setRecursos(data.map((item) => item.detalle_lista));
     }
   }, [data]);
   if (loading) return <h1>Loading</h1>;
 
   const handleFilterRecurso = (e) => {
-    const filter = e.target.value.replace(/^\w/, (c) => c.toUpperCase() );
+    const filter_ = e.target.value.replace(/^\w/, (c) => c.toLowerCase() );
     const filtered = data.filter((item) => {
-      return JSON.stringify(item).indexOf(filter) !== -1;
+      return JSON.stringify(item).indexOf(filter_) !== -1;
     });
     setDetalles(filtered);
-  };
-  const handleFilterAccion = (e) => {
-    const filter = e.target.value.toLowerCase()
-    const filtered = data.filter((item) => {
-      return JSON.stringify(item).indexOf(filter) !== -1;
-    });
-    setDetalles(filtered);
-  };
-
+  };  
   return (
     <div className="max-w-[990px] m-auto">
       <div>
@@ -46,12 +38,12 @@ const DetailAct = () => {
       </div>
       <div className="grid grid-cols-5 border bg-slate-500 text-white">
         <p className="col-span-2 p-3">Recursos</p>
-        <p className="col-span-3 p-3">Accion</p>
+        <p className="col-span-3 p-3">Actividad/Acción</p>
       </div>
-      {detalles.map((item) => (
-        <div key={item._id} className="grid grid-cols-5 items-center border">
+      {detalles.map((item, index) => (
+        <div key={index} className="grid grid-cols-5 items-center border">
           <div className="col-span-2 p-3">
-            {item.detallt_lista.map((detail, index) => (
+            {item.detalle_lista.map((detail, index) => (
               <div key={index}>
                 {index + 1} {detail.toLowerCase()}
                 
@@ -62,7 +54,7 @@ const DetailAct = () => {
           <div><span className="font-semibold">actividad:</span> {item.nombre}</div>
             <div><span className="font-semibold">detalle:</span> {item.detalle}</div>
             <div><span className="font-semibold">acción:</span> {item.acciones.nombre_accion}</div>
-            <Link to={`/colegios/${params.name_colegio}/actividades/${params.year}/${item.id_accion}`} className="bg-cyan-500 hover:bg-cyan-400 hover:text-white hover:rounded-lg text-base text-gray-700 font-semibold p-1 rounded-lg max-w-[10%]">
+            <Link to={`/colegios/${params.name_colegio}/actividades/${params.year}/${item.uuid_accion}`} className="bg-cyan-500 hover:bg-cyan-400 hover:text-white hover:rounded-lg text-base text-gray-700 font-semibold p-1 rounded-lg max-w-[10%]">
               Acción
             </Link>
           </div>

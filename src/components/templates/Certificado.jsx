@@ -8,12 +8,12 @@ import axios from "axios";
 
 function Certificado() {
   const params = useParams();
-
+  console.log(params)
   const [dataAccion, setDataAccion] = useState([]);
   const [director, setDirector] = useState([]);
   const [load, setLoad] = useState(true);
   const { data, error, loading } = useFetch(
-    `accion/actividades/?id=${params.id}`
+    `accion/actividades/?uuid_accion=${params.uuid_accion}`
   );
   useEffect(() => {
     if (data) {
@@ -113,7 +113,7 @@ function Certificado() {
                 <p className="text-end">:</p>
               </div>
               <div className="flex mt-7 ml-2">
-                <p>{dataAccion.subdimension}</p>
+                <p>{params.subdimension}</p>
               </div>
               <div className="grid grid-cols-5 mt-7">
                 <label htmlFor="" className="text-start col-span-4">
