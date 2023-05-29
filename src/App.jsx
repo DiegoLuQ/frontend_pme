@@ -1,7 +1,16 @@
 import MainHeader from "./components/organismos/MainHeader";
 import MainMenu from "./components/moleculas/header/MainMenu";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 function App() {
+  const token = localStorage.getItem('token')
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (token) {
+      navigate('/admin/colegios')
+    }
+
+  }, [])
   return (
     <div className="max-w-[1440px] m-auto mb-5">
       <MainHeader>

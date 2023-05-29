@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { jsPDF } from "jspdf";
 
 import useFetch from "../../hooks/useFetch";
-import domtoimage from "dom-to-image";
 import axios from "axios";
 
 function Certificado() {
+  const location = useLocation();
+  const datito = location.state.actividad
+  const [actividadPME, setActividadPME] = useState(datito);
+
   const params = useParams();
-  console.log(params)
+  if (!params) {
+    return;
+  }
+  const arraySubdimension = params.subdimension.split(",");
   const [dataAccion, setDataAccion] = useState([]);
   const [director, setDirector] = useState([]);
   const [load, setLoad] = useState(true);
@@ -26,9 +32,8 @@ function Certificado() {
         setLoad(false);
       });
   }, [data]);
-  if(loading) return <h1>Loading..</h1>
-  console.log(director.director);
-  let img_dp = params.colegio == "Macaya"? "https://i.postimg.cc/2SXZ7V64/dp.png" : "https://i.postimg.cc/25sLgMny/mc.png"
+  if (loading) return <h1>Loading..</h1>;
+
   const doc = new jsPDF("p", "pt", "letter", true, "UTF8");
   doc.setFont("helvetica");
   const handleClick = () => {
@@ -53,18 +58,6 @@ function Certificado() {
     });
   };
 
-  const handleClickDOMTOHTML = () => {
-    const input = document.getElementById("paraPDF");
-    const pdf = new jsPDF();
-
-    if (pdf) {
-      domtoimage.toPng(input).then((imgData) => {
-        pdf.addImage(imgData, "PNG", 0, 0, 170, 270);
-        pdf.save("download.pdf");
-      });
-    }
-  };
-
   return (
     <>
       <div className="hidden md:block max-w-[1440px] m-auto">
@@ -76,15 +69,21 @@ function Certificado() {
           <div className="mt-4 flex justify-between items-center gap-5 mb-2">
             <div>
               <img
-              // DEBES MODIFICAR EL TAMAÑO DE LA IMAGEN, PASALO A JPG
-                src={params.colegio == "Macaya" ? "https://i.postimg.cc/fbXSL2zp/mc.png" :"https://i.postimg.cc/QdvWjG3c/dp.png"}
+                // DEBES MODIFICAR EL TAMAÑO DE LA IMAGEN, PASALO A JPG
+                src={
+                  params.colegio == "Macaya"
+                    ? "https://i.postimg.cc/fbXSL2zp/mc.png"
+                    : "https://i.postimg.cc/QdvWjG3c/dp.png"
+                }
                 alt=""
                 width="80px"
               />
             </div>
             <div className="">
               <p>Colegio {params.colegio}</p>
-              <p>{director.direccion} FONO:{director.telefono}</p>
+              <p>
+                {director.direccion} FONO:{director.telefono}
+              </p>
               <p>Alto Hospicio</p>
             </div>
           </div>
@@ -113,7 +112,13 @@ function Certificado() {
                 <p className="text-end">:</p>
               </div>
               <div className="flex mt-7 ml-2">
-                <p>{params.subdimension}</p>
+                <div>
+                  {arraySubdimension.map((item, index) => (
+                    <div key={index} className="flex flex-col">
+                      <p>{item}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="grid grid-cols-5 mt-7">
                 <label htmlFor="" className="text-start col-span-4">
@@ -133,13 +138,30 @@ function Certificado() {
               <div className="flex mt-7 ml-2">
                 <p>{dataAccion.descripcion}</p>
               </div>
+              {actividadPME !== undefined ? (
+                <div className="grid grid-cols-2 mt-3 text-2xl w-[820px] m-auto">
+                  <div className="grid grid-cols-5 mt-7">
+                    <label htmlFor="" className="text-start col-span-4">
+                      Actividad de la acción
+                    </label>
+                    <p className="text-end">:</p>
+                  </div>
+                  <div className="mt-7 ml-2">{actividadPME}</div>
+                </div>
+              ) : (
+                <></>
+              )}
             </div>
           </div>
           <div className="mt-16 flex justify-center my-40">
             <div className="flex gap-5">
-            <img
-              // DEBES MODIFICAR EL TAMAÑO DE LA IMAGEN, PASALO A JPG
-                src={params.colegio == "Macaya" ? "https://i.postimg.cc/fbXSL2zp/mc.png" :"https://i.postimg.cc/QdvWjG3c/dp.png"}
+              <img
+                // DEBES MODIFICAR EL TAMAÑO DE LA IMAGEN, PASALO A JPG
+                src={
+                  params.colegio == "Macaya"
+                    ? "https://i.postimg.cc/fbXSL2zp/mc.png"
+                    : "https://i.postimg.cc/QdvWjG3c/dp.png"
+                }
                 alt=""
                 width="80px"
               />

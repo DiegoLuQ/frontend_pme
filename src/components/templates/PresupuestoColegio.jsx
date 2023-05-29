@@ -11,7 +11,7 @@ const PresupuestoColegio = () => {
   if (error) return <h1>Loading</h1>;
   if (loading) return <h1>Loading</h1>;
   console.log(params);
-  
+
   const handleButtonFilter = () => {
     const filter = filterValues;
     const filtered = data.filter((item) => {
@@ -30,6 +30,9 @@ const PresupuestoColegio = () => {
       setItemPresupuesto(filtered);
     }
   };
+  
+  // obtenemos las key y valores de cada input para 
+  // crear un objeto y poder filtrar
   const hanldeFilterItem = (e) => {
     const { name, value } = e.target;
     setFilterValues({ ...filterValues, [name]: value });
@@ -40,86 +43,90 @@ const PresupuestoColegio = () => {
       <h1 className="text-center text-4xl font-bold italic text-teal-600">
         Presupuesto {params.name_colegio} - {params.year}
       </h1>
-      <div className="flex gap-3 mt-3">
-        <div className="flex flex-col gap-2 h-[90vh] sticky top-0">
-          <div className="bg-gray-200 py-2 text-center">
-            <h1 className="text-center text-2xl">Filtrar Por</h1>
-            <span className="text-xs italic text-gray-500">Sensible a tildes</span>
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="area">Area</label>
-            <input
-              onChange={hanldeFilterItem}
-              type="text"
-              name="area"
-              id="area"
-              placeholder="Buscar por area"
-              className="border px-3 py-2 rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="area">Sub-area</label>
-            <input
-              onChange={hanldeFilterItem}
-              type="text"
-              name="subarea"
-              id="subarea"
-              placeholder="Buscar por subarea"
-              className="border px-3 py-2 rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="descripcion">Descripción</label>
-            <input
-              onChange={hanldeFilterItem}
-              type="text"
-              name="descripcion"
-              id="descripcion"
-              placeholder="Buscar por descripcion"
-              className="border px-3 py-2 rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="motivo">Motivo/Actividad</label>
-            <input
-              onChange={hanldeFilterItem}
-              type="text"
-              name="motivo"
-              id="motivo"
-              placeholder="Buscar por motivo"
-              className="border px-3 py-2 rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="mes">Mes</label>
-            <select
-              name="mes"
-              className="p-2 border rounded-lg"
-              onChange={hanldeFilterItem}
+      <div className=" flex gap-2">
+        <div className="mt-3">
+          <div className="flex flex-col gap-2 sticky top-0">
+            <div className="bg-gray-200 py-2 text-center">
+              <h1 className="text-center text-2xl">Filtrar Por</h1>
+              <span className="text-xs italic text-gray-500">
+                Sensible a tildes
+              </span>
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="area">Area</label>
+              <input
+                onChange={hanldeFilterItem}
+                type="text"
+                name="area"
+                id="area"
+                placeholder="Buscar por area"
+                className="border px-3 py-2 rounded-lg"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="area">Sub-area</label>
+              <input
+                onChange={hanldeFilterItem}
+                type="text"
+                name="subarea"
+                id="subarea"
+                placeholder="Buscar por subarea"
+                className="border px-3 py-2 rounded-lg"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="descripcion">Descripción</label>
+              <input
+                onChange={hanldeFilterItem}
+                type="text"
+                name="descripcion"
+                id="descripcion"
+                placeholder="Buscar por descripcion"
+                className="border px-3 py-2 rounded-lg"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="motivo">Motivo/Actividad</label>
+              <input
+                onChange={hanldeFilterItem}
+                type="text"
+                name="motivo"
+                id="motivo"
+                placeholder="Buscar por motivo"
+                className="border px-3 py-2 rounded-lg"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="mes">Mes</label>
+              <select
+                name="mes"
+                className="p-2 border rounded-lg"
+                onChange={hanldeFilterItem}
+              >
+                <option value="">Selecciona un Mes</option>
+                <option value="enero">Enero</option>
+                <option value="febrero">Febrero</option>
+                <option value="marzo">Marzo</option>
+                <option value="abril">Abril</option>
+                <option value="mayo">Mayo</option>
+                <option value="junio">Junio</option>
+                <option value="julio">Julio</option>
+                <option value="agosto">Agosto</option>
+                <option value="septiembre">Septiembre</option>
+                <option value="noviembre">Octubre</option>
+                <option value="noviembre">Noviembre</option>
+                <option value="diciembre">Diciembre</option>
+              </select>
+            </div>
+            <button
+              onClick={handleButtonFilter}
+              className="p-2 bg-blue-500 hover:bg-blue-600 rounded-lg font-bold text-white"
             >
-              <option value="">Selecciona un Mes</option>
-              <option value="enero">Enero</option>
-              <option value="febrero">Febrero</option>
-              <option value="marzo">Marzo</option>
-              <option value="abril">Abril</option>
-              <option value="mayo">Mayo</option>
-              <option value="junio">Junio</option>
-              <option value="julio">Julio</option>
-              <option value="agosto">Agosto</option>
-              <option value="septiembre">Septiembre</option>
-              <option value="noviembre">Octubre</option>
-              <option value="noviembre">Noviembre</option>
-              <option value="diciembre">Diciembre</option>
-            </select>
+              Filtrar
+            </button>
           </div>
-          <button
-            onClick={handleButtonFilter}
-            className="p-2 bg-blue-500 hover:bg-blue-600 rounded-lg font-bold text-white"
-          >
-            Filtrar
-          </button>
         </div>
-        <table className="w-10/12">
+        <table className="w-12/12 mt-3">
           <thead className="">
             <tr className="text-left border">
               <th className="p-2"> Area </th>

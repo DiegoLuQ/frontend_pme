@@ -1,45 +1,34 @@
-import { useState } from "react";
+
 import { Link } from "react-router-dom";
-
+import useAuth from "../../../hooks/useAuth";
 const MainMenu = () => {
-  const [authenticated, setAuthenticated] = useState(true);
-  const [admin, setAdmin] = useState(true);
-
+  const { cerrarSession } = useAuth()
+  const token = localStorage.getItem('token')
   return (
     <nav className="w-full flex justify-center md:flex md:justify-end md:items-center">
-      <ul className="flex ">
-        <Link
-          to="/"
-          className="bg-teal-700 hover:bg-teal-600 px-4 py-5 text-white"
-        >
+      <ul className="flex bg-teal-700 ">
+        <Link to="/" className="hover:bg-teal-600 px-4 py-5 text-white">
           Inicio
         </Link>
-        {authenticated ? (
-          <div className="w-full flex justify-center md:flex md:justify-end md:items-center">
-            <Link className="bg-teal-700 hover:bg-teal-600 px-4 py-5 text-white">
-              Logout
-            </Link>
-            <Link 
-            to="/usuarios/gestion"
-            className="bg-teal-700 hover:bg-teal-600 px-4 py-5 text-white">
-              Area de Gestión
-            </Link>
-            {admin && (
-              <Link
-                to="/colegios"
-                className="bg-teal-700 hover:bg-teal-600 px-4 py-5 text-white"
-              >
-                Colegios
-              </Link>
-            )}
-          </div>
-        ) : (
+        {!token ? (
           <Link
-            to="/"
+            to="/login"
             className="bg-teal-700 hover:bg-teal-600 px-4 py-5 text-white"
           >
             Login
           </Link>
+        ) : (
+          <div className="py-5">
+            <Link to={'/admin/colegios'} className="hover:bg-teal-600 py-5 px-4 text-white">
+              Colegios
+            </Link>
+            <Link
+              onClick={cerrarSession}
+              className="hover:bg-teal-600 py-5 px-4 text-white"
+            >
+              Salir
+            </Link>
+          </div>
         )}
       </ul>
     </nav>

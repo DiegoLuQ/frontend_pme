@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
@@ -20,13 +19,12 @@ function Colegios() {
     }
   }, [data]);
   if (loading) return <h1>loading</h1>;
-  console.log(colegio)
   return (
     <>
       <div className="font-bold text-5xl text-center text-gray-600 my-7 bg-gray-300 md:bg-transparent py-6">
         Colegios
       </div>
-      <div className="flex flex-col md:flex-row md:justify-between w-12/12 m-auto mt-2">
+      <div className="flex flex-col md:flex-row md:justify-between w-8/12 m-auto mt-2">
         {colegio.map((item) => (
           // console.log(item)
           <div
@@ -44,22 +42,22 @@ function Colegios() {
               {item.nombre}
             </h2>
             <div className="bg-gray-300 py-2 px-2 relative">
-              <p className="flex gap-3">
+              <p className="flex gap-3 items-center">
                 <span className="font-bold">Dirección:</span> {item.direccion}
               </p>
-              <p className="flex gap-3">
+              <p className="flex gap-3 items-center">
                 <span className="font-bold">RBD:</span> {item.rbd}
               </p>
-              <p className="flex gap-3">
+              <p className="flex gap-3 items-center">
                 <span className="font-bold">RUT:</span> {item.rut}
               </p>
-              <p className="flex gap-3">
+              <p className="flex gap-3 items-center">
                 <span className="font-bold">Telefono:</span> {item.telefono}
               </p>
               <Pme id={item._id} colegio={item.nombre} />
-              <Presupuesto id_colegio={item._id}  colegio={item.nombre} />
+              {/* <Presupuesto id_colegio={item._id}  colegio={item.nombre} /> */}
             </div>
-            <div className="flex flex-row items-center md:flex md:flex-row md:justify-center mb-4">
+            {/* <div className="flex flex-row items-center md:flex md:flex-row md:justify-center mb-4">
               <Link
                 to={`/gestion/${item.nombre}/${item._id}`}
                 className={
@@ -70,7 +68,7 @@ function Colegios() {
               >
                 Gestionar {item.nombre}
               </Link>
-            </div>
+            </div> */}
           </div>
         ))}
       </div>
@@ -81,9 +79,7 @@ function Colegios() {
           <AccionesUpdate />
         </div>
       </div>
-      <div className="my-4 text-center">
-        <Link className="text-orange-600 font-bold text-base md:text-lg md:px-2 mx-2 py-1 bg-gray-800 mt-2 w-[100%] md:w-[70%] hover:bg-gray-700 cursor-pointer rounded-lg">Nuevo Colegio</Link>
-      </div>
+
     </>
   );
 }

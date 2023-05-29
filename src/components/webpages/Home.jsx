@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import flujo from "../../assets/flujograma.jpg";
+import Login from "../templates/Login";
+import { useNavigate } from "react-router-dom";
 export const Home = () => {
+  const tokenExist = localStorage.getItem('token')
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (tokenExist) {
+      // navigate('/admin')
+    }
+  }, [])
   return (
     <div className="max-w-[1440px] m-auto bg-slate-800 py-5">
       <div className="flex flex-col items-center">

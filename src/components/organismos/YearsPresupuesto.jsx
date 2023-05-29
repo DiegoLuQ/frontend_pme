@@ -12,7 +12,7 @@ const YearsPresupuesto = ({ id_colegio, colegio }) => {
       {data.map((item) => (
         <Link
           key={item._id}
-          to={`/colegios/${colegio}/presupuesto/${item.year}/${item._id}`}
+          to={`/admin/colegios/${colegio}/presupuesto/${item.year}/${item._id}`}
           className={
             colegio == "Macaya"
               ? "text-base font-semibold py-1 text-green-500 rounded-md hover:bg-gray-700 px-1"

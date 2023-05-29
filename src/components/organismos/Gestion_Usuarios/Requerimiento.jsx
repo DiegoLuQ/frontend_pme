@@ -10,6 +10,17 @@ const Requerimiento = () => {
   const params = useParams();
   const img_dpmc = params.nombre_colegio == "Macaya" ? "MC" : "DP";
 
+  const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
+  const options = {
+    hour12: false,
+    timeZone: "America/Santiago",
+    hour: "numeric",
+    minute: "numeric",
+  };
+  const [hora, setHora] = useState(
+    new Date().toLocaleTimeString("es-CL", options)
+  );
+
   const [value_id, setValue_id] = useState(generarId(img_dpmc));
   const [listaRequerimiento, setListaRequerimiento] = useState([]);
   const [requirement, setRequirement] = useState({});
@@ -109,7 +120,7 @@ const Requerimiento = () => {
       descripcion: e.target.descripcion.value,
     };
     addRequerimiento(datos);
-    console.log(listaRequerimiento)
+    console.log(listaRequerimiento);
     // setRequirement({
     //   cantidad: 0,
     //   area_instalacion: "",
@@ -137,23 +148,24 @@ const Requerimiento = () => {
           </div>
           <div className="text-2xl font-semibold">{value_id}</div>
         </div>
-        <h1 className="my-4 text-base md:text-2xl font-bold">
+        <h1 className="my-4 text-base text-center md:text-2xl font-bold">
           SOLICITUD DE REQUERIMIENTOS OPERATIVOS (REPARACION-MANTENCION DE
           INFRAESTRUCTURA Y/O COMPRA DE ACTIVOS COLEGIO MACAYA)
         </h1>
         <div className="">
           <OptionList
             name="area"
-            value_label="Areas"
+            value_label="De"
             value_option="Buscar area..."
             lista={[
               "Dirección",
-              "PIE",
-              "UTP Básica",
               "Inspectoria",
-              "Contabilidad",
+              "UTP Básica",
               "UTP Media",
+              "Pre Básica",
               "Finanzas",
+              "Contabilidad",
+              "PIE",
             ]}
           />
           <OptionList
@@ -174,11 +186,21 @@ const Requerimiento = () => {
               "Sala de profesores",
               "Oficina de Dirección",
               "Oficina de UTP",
-              "Oficina de Inspectoria"
+              "Oficina de Inspectoria",
             ]}
           />
           <Input_Label value_label="Para quien va dirigido" placeholder="" />
-          <Fecha />
+          <div className="grid grid-cols-12 gap-2 mt-2">
+            <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+              Fecha
+            </label>
+            <input
+              type="date"
+              className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+            />
+          </div>
           <div className="grid grid-cols-12 gap-2 mt-2">
             <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
               Hora
@@ -186,11 +208,10 @@ const Requerimiento = () => {
             <input
               className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
               type="time"
-              min="2018-01-01"
-              max="2042-12-31"
+              value={hora}
+              onChange={(e) => setHora(e.target.value)}
             />
           </div>
-          <Input_Label value_label="Descripcion" placeholder="Descripcion" />
         </div>
         <br />
         <hr />
@@ -228,7 +249,7 @@ const Requerimiento = () => {
               name="descripcion"
               value="Direccion"
             />
-            
+
             <div className="flex justify-end">
               <button className="text-sm md:text-base px-2 py-2 rounded-lg bg-blue-500 hover:rounded-lg hover:bg-blue-600 text-white font-bold my-3">
                 Agregar
@@ -356,7 +377,7 @@ const Requerimiento = () => {
           </div>
         </div>
       </div>
-      <div className="mt-4">
+      <div className="w-12/12 flex justify-center mt-4">
         <button className="bg-green-300 hover:bg-green-400 px-3 py-2 rounded-lg text-md text-black text-2xl">
           Enviar requerimiento
         </button>
