@@ -12,7 +12,7 @@ services:
     ports:
       - 8005:80
 
-networks:
-  default:
-    name: web_private_red_webapps
-    external: true
+# networks:
+#   default:
+#     name: web_private_red_webapps
+#     external: true
