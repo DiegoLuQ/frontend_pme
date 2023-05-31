@@ -25,7 +25,7 @@ const Login = () => {
       return;
     } else {
       await axios
-        .post("http://127.0.0.1:8000/v1/login/auth", {
+        .post(`${import.meta.env.VITE_API}/login/auth`, {
           username: e.target.email.value,
           password: e.target.password.value,
         })
