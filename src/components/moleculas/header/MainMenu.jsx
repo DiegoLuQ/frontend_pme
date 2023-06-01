@@ -15,7 +15,7 @@ const MainMenu = () => {
             to="/login"
             className="bg-teal-700 hover:bg-teal-600 px-4 py-5 text-white"
           >
-            Login
+            Ingresar
           </Link>
         ) : (
           <div className="py-5">

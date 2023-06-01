@@ -13,6 +13,8 @@ const Recursos = () => {
   const [newRecurso, setNewRecurso] = useState(""); // Agregando nuevo recurso
   const { data, error, loading } = useFetch(`recursos/${params.id}`); // la data
   const [modalDetalle, setModalDetalle] = useState(false);
+  const [recursoReq, setRecursoReq] = useState("");
+  const [modalReq, setModalReq] = useState(false);
 
   const { auth } = useContext(AuthContext);
   const [btnOn, setBtnOn] = useState({}); //
@@ -25,7 +27,7 @@ const Recursos = () => {
   const [hora, setHora] = useState(
     new Date().toLocaleTimeString("es-CL", options)
   );
-  
+
   const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
   useEffect(() => {
     if (data) {
@@ -57,14 +59,14 @@ const Recursos = () => {
   // UTILIZANDO REGEx
   const handleFilterRegex = () => {
     const dataBuscar = {
-      "actividad":filtroActividad,
-      "recurso_interno":filtroRecurso,
-      "recurso_pme":filtroRecursoPME,
-      "usuario": auth.usuario,
-      "fecha":fecha,
-      "hora":hora
-    }
-    console.log(dataBuscar)
+      actividad: filtroActividad,
+      recurso_interno: filtroRecurso,
+      recurso_pme: filtroRecursoPME,
+      usuario: auth.usuario,
+      fecha: fecha,
+      hora: hora,
+    };
+    console.log(dataBuscar);
     const regexActividad = new RegExp(filtroActividad, "i");
     const regexRecurso = new RegExp(filtroRecurso, "i");
     const regexRecursopme = new RegExp(filtroRecursoPME, "i");
@@ -90,11 +92,19 @@ const Recursos = () => {
   const closeModal = () => {
     setModalVisible(false);
     setModalDetalle(false);
+    setModalReq(false);
+    setRecursoReq("");
     setBtnOn({});
   };
 
   const onModalDetalle = (data) => {
     setModalDetalle(true);
+    if (data) {
+      setRecursosData(data);
+    }
+  };
+  const onModalReq = (data = {}) => {
+    setModalReq(true);
     if (data) {
       setRecursosData(data);
     }
@@ -282,7 +292,7 @@ const Recursos = () => {
             </nav>
           </caption> */}
           <thead className="">
-            <tr>
+            <tr className="">
               <th className="text-start border p-2"></th>
 
               <th className="text-start border p-2">Actividad</th>
@@ -315,8 +325,8 @@ const Recursos = () => {
                   </Link>{" "}
                 </td>
                 <td className="border p-2">{item.accion.nombre_accion}</td>
-                <td className="border px-2">
-                  <div className="flex gap-2">
+                <td className="border px-2 w-[180px]">
+                  <div className="flex justify-center gap-2">
                     <button
                       onClick={() => handleCertificadoClick(item)}
                       className="font-bold text-xs px-2 hover:bg-green-600 bg-green-500 py-1 rounded-2xl"
@@ -329,6 +339,12 @@ const Recursos = () => {
                     >
                       Detalle
                     </button>
+                    {/* <button
+                      onClick={() => onModalReq(item)}
+                      className="text-white font-bold text-xs px-2 hover:bg-blue-500 bg-blue-400 py-1 rounded-2xl"
+                    >
+                      Req
+                    </button> */}
                   </div>
                 </td>
                 {auth.admin && (
@@ -353,7 +369,7 @@ const Recursos = () => {
           >
             <div className="fixed inset-0 bg-black opacity-25"></div>
             <div className="relative w-full max-w-2xl md:max-w-4xl max-h-full">
-              <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+              <div className="relative rounded-lg shadow dark:bg-gray-700 bg-gray-700">
                 <button
                   type="button"
                   onClick={closeModal}
@@ -375,14 +391,14 @@ const Recursos = () => {
                 </button>
                 {/* Inputs */}
                 <div className="px-6 py-6 lg:px-8">
-                  <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">
+                  <h3 className="mb-4 text-xl font-medium text-white">
                     Modificar recursos de la actividad
                   </h3>
                   <div className="space-y-6">
                     <div>
                       <label
                         htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        className="block mb-2 text-sm font-medium text-white"
                       >
                         Actividad
                       </label>
@@ -399,7 +415,7 @@ const Recursos = () => {
                       <div className="">
                         <label
                           htmlFor="email"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          className="block mb-2 text-sm font-medium text-white"
                         >
                           Nuevo recurso
                         </label>
@@ -478,6 +494,193 @@ const Recursos = () => {
                         Lost Password?
                       </a>
                     </div> */}
+                    <button
+                      type="submit"
+                      onClick={handleUpdateActividad}
+                      className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    >
+                      Modificar Recursos
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+        {modalReq ? (
+          <div
+            tabIndex="-1"
+            aria-hidden="true"
+            className="fixed inset-0 flex items-center justify-center z-50"
+          >
+            <div
+              onClick={() => console.log("Hola")}
+              className="fixed inset-0 bg-black opacity-25"
+            ></div>
+            <div className="relative w-full max-w-2xl md:max-w-4xl max-h-full">
+              <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+                >
+                  <svg
+                    aria-hidden="true"
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    ></path>
+                  </svg>
+                </button>
+                {/* Inputs */}
+                <div className="px-6 py-6 lg:px-8">
+                  <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">
+                    Agregar recurso a requerimiento
+                  </h3>
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex gap-2">
+                        <div className="w-6/12">
+                          <label
+                            htmlFor="email"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            Recurso para Requerimiento
+                          </label>
+                          <input
+                            name="nombre_actividad"
+                            id="nombre_actividad"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            placeholder="actividad"
+                            value={recursoReq}
+                            required
+                            autoComplete={"off"}
+                          />
+                        </div>
+                        <div className="w-6/12">
+                          <label
+                            htmlFor="email"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                          >
+                            Cantidad
+                          </label>
+                          <input
+                            name="nombre_actividad"
+                            type="number"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required
+                            autoComplete={"off"}
+                            defaultValue={1}
+                            min={0}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        {RecursosData.recursos_actividad.map((item, index) => (
+                          <button
+                            onClick={() => setRecursoReq(item)}
+                            className="text-white p-1 border bg-sky-800 hover:bg-sky-700"
+                          >
+                            {item}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="w-6/12">
+                        <label
+                          htmlFor="email"
+                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        >
+                          Prioridad
+                        </label>
+                        <select
+                          name=""
+                          id=""
+                          className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
+                        >
+                          <option value="">Seleccionar...</option>
+                          <option value="normal">Normal</option>
+                          <option value="medio">Medio</option>
+                          <option value="urgente">Urgente</option>
+                          <option value="presupuesto">Presupuest</option>
+                        </select>
+                      </div>
+                      <div className="w-6/12">
+                        <label
+                          htmlFor="email"
+                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        >
+                          Area/Lugar
+                        </label>
+                        <input
+                          name="nombre_actividad"
+                          id="nombre_actividad"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                          placeholder="Breve descripción del recurso solicitado"
+                          required
+                          autoComplete={"off"}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Detalle
+                      </label>
+                      <input
+                        name="nombre_actividad"
+                        id="nombre_actividad"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                        placeholder="Detalle o S/D"
+                        autoComplete={"off"}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Justificación
+                      </label>
+                      <input
+                        name="nombre_actividad"
+                        id="nombre_actividad"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                        placeholder="Porqué del recurso solicitado"
+                        required
+                        autoComplete={"off"}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Descripción
+                      </label>
+                      <input
+                        name="nombre_actividad"
+                        id="nombre_actividad"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                        placeholder="Breve descripción del recurso solicitado"
+                        required
+                        autoComplete={"off"}
+                      />
+                    </div>
+
                     <button
                       type="submit"
                       onClick={handleUpdateActividad}

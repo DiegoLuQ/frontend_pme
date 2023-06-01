@@ -41,7 +41,7 @@ const Pme = ({ colegio, id }) => {
               </Link>
               {auth.admin && (
                 <Link 
-                //  to="/admin/usuarios/gestion"
+                 to="/admin/usuarios/gestion"
                  className="bg-blue-300 hover:bg-blue-400 hover:text-gray-700 hover:rounded-lg text-base text-gray-700 font-semibold p-1 rounded-lg">
                   Gestión
                 </Link>
