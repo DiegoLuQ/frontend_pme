@@ -14,12 +14,12 @@ export const Home = () => {
     <div className="max-w-[1440px] m-auto bg-slate-800 py-5">
       <div className="flex flex-col items-center">
         <p className="font-bold text-3xl md:text-5xl text-center py-4 text-transparent bg-clip-text bg-gradient-to-t from-teal-400 to-[#89f291]">
-          Diagrama de Flujo
+          Diagrama de Flujo 
         </p>
         <img src={flujo} alt="" width="80%" />
       </div>
       <p className="font-bold text-3xl md:text-5xl text-center  py-4 text-transparent bg-clip-text bg-gradient-to-t from-teal-400 to-[#89f291]">
-        Tecnologias ocupadas
+        Tecnologias ocupadas v1.0.0.1
       </p>
       <div className="max-w-[900px] m-auto">
         <div className="flex flex-col md:flex  md:flex-row md:justify-around">
