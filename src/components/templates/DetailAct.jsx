@@ -43,7 +43,7 @@ const DetailAct = () => {
           className="border px-3 py-2 rounded-lg"
         />
         <Link
-          to={`/admin/colegios/${params.name_colegio}/recursos/${params.year}/${params.id}`}
+          to={`/user/colegios/${params.name_colegio}/recursos/${params.year}/${params.id}`}
           className="bg-cyan-300 hover:bg-cyan-400 hover:text-gray-700 hover:rounded-lg text-base text-gray-700 font-semibold p-1 rounded-lg"
         >
           Ver Recursos
@@ -69,7 +69,7 @@ const DetailAct = () => {
             </div>
             <div className="flex gap-2 mt-4 text-white">
               <Link
-                to={`/admin/colegios/${params.name_colegio}/actividades/${params.year}/${item.id_pme}/${item.uuid_accion}`}
+                to={`/user/colegios/${params.name_colegio}/actividades/${params.year}/${item.id_pme}/${item.uuid_accion}`}
                 className="bg-blue-300 hover:bg-blue-400 hover:text-gray-700 hover:rounded-lg text-base text-gray-700 font-semibold p-1 rounded-lg"
               >
                 Acción

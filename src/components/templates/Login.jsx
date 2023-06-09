@@ -33,7 +33,7 @@ const Login = () => {
           console.log(resp.data);
           localStorage.setItem('token', resp.data.access_token)
           setAuth(resp.data.payload)
-          navigate('/admin/colegios')
+          navigate('/user/colegios')
         })
         .catch((err) => {
           setAlerta({

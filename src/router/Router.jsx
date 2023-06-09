@@ -18,6 +18,8 @@ import Recursos from "../components/templates/Recursos";
 import Login from "../components/templates/Login";
 import RutaProtegida from "../components/templates/RutaProtegida";
 import Prueba from "../components/templates/Prueba";
+import RegistrarActividad from "../components/templates/RegistrarActividad";
+import PDFRequerimiento from "../components/organismos/Gestion_Usuarios/PDFRequerimiento";
 
 const router = createBrowserRouter([
   {
@@ -40,68 +42,76 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/admin",
+    path: "/user",
     element: <RutaProtegida />,
     children: [
       {
-        path: "/admin/colegios",
+        path: "/user/colegios",
         element: <Colegios />,
       },
       {
         // ACCIONES
-        path: "/admin/colegios/pasoporti",
+        path: "/user/colegios/pasoporti",
         element: <Prueba />,
       },
       {
         // ACCIONES
-        path: "/admin/colegios/:colegio/pme/:year/:id",
+        path: "/user/colegios/:colegio/pme/:year/:id",
         element: <Macaya />,
       },
       {
-        path: "/admin/colegios/:colegio/actividades/:year/:id/:uuid_accion",
+        path: "/user/colegios/:colegio/actividades/:year/:id/:uuid_accion",
         element: <Actividades />,
       },
       {
-        path: "/admin/colegios/:colegio/certificado/:year/:id/:uuid_accion/:subdimension",
+        path: "/user/colegios/:colegio/certificado/:year/:id/:uuid_accion/:subdimension",
         element: <Certificado />,
       },
       {
-        path: "/admin/colegios/:name_colegio/detalles/:year/:id",
+        path: "/user/colegios/:name_colegio/detalles/:year/:id",
         element: <DetailAct />,
       },
       {
-        path: "/admin/colegios/:name_colegio/recursos/:year/:id/",
+        path: "/user/colegios/:name_colegio/recursos/:year/:id/",
         element: <Recursos />,
       },
       {
-        path: "/admin/colegios/:name_colegio/presupuesto/:year/:id",
+        path: "/user/colegios/:name_colegio/recursos/:year/:id/registrar_actividad",
+        element: <RegistrarActividad />
+      },
+      {
+        path: "/user/colegios/:name_colegio/presupuesto/:year/:id",
         element: <PresupuestoColegio />,
       },
       {
-        path: "/admin/gestion/:nombre_colegio/:id_colegio",
+        path: "/user/gestion/:nombre_colegio/:id_colegio",
         element: <Gestion />,
         children: [
           {
-            path: "/admin/gestion/:nombre_colegio/:id_colegio/pme",
+            path: "/user/gestion/:nombre_colegio/:id_colegio/pme",
             element: <GestionPME />,
           },
           {
-            path: "/admin/gestion/:nombre_colegio/:id_colegio/presupuesto",
+            path: "/user/gestion/:nombre_colegio/:id_colegio/presupuesto",
             element: <GestionPresupuesto />,
           },
           {
-            path: "/admin/gestion/:nombre_colegio/:id_colegio/modificar",
+            path: "/user/gestion/:nombre_colegio/:id_colegio/modificar",
             element: <GestionColegio />,
           },
         ],
       },
       {
-        path: "/admin/usuarios/gestion",
+        path: "/user/usuarios/gestion",
         element: <GestionUsuarios />,
         children: [
           {
-            path: "/admin/usuarios/gestion/:nombre_colegio/:id_colegio/req",
+            path: "/user/usuarios/gestion/req",
             element: <Requerimiento />,
+          },
+          {
+            path: "/user/usuarios/gestion/req/:codigo_req",
+            element: <PDFRequerimiento />,
           },
         ],
       },

@@ -13,7 +13,7 @@ const SubDimensiones = ({ subdimensiones }) => {
     <div className="font-semibold italic flex flex-col">
       {subdimension.map((item, index) => (
         <Link
-          // to={`/admin/colegios/${params.colegio}/certificado/${params.year}/${params.id}/${params.uuid_accion}/${item}`}
+          // to={`/user/colegios/${params.colegio}/certificado/${params.year}/${params.id}/${params.uuid_accion}/${item}`}
           key={index}
           className="text-cyan-600 hover:text-cyan-800"
         >

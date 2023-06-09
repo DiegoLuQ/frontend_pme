@@ -14,19 +14,19 @@ const MenuGestion = () => {
       </div>
       <div className="flex-col flex md:flex-row flex-wrap justify-center gap-3">
         <Link
-          to={`/admin/gestion/${params.nombre_colegio}/${params.id_colegio}/modificar`}
+          to={`/user/gestion/${params.nombre_colegio}/${params.id_colegio}/modificar`}
           className="flex items-center justify-center md:w-[14%] bg-blue-600 text-center hover:bg-blue-800 text-white font-bold text-lg"
         >
           {params.nombre_colegio}
         </Link>
         <Link
-          to={`/admin/gestion/${params.nombre_colegio}/${params.id_colegio}/pme`}
+          to={`/user/gestion/${params.nombre_colegio}/${params.id_colegio}/pme`}
           className="flex items-center justify-center md:w-[14%] bg-blue-600 text-center hover:bg-blue-800 text-white font-bold text-lg"
         >
           Registrar PME(acciones)
         </Link>
         <Link
-          to={`/admin/gestion/${params.nombre_colegio}/${params.id_colegio}/presupuesto`}
+          to={`/user/gestion/${params.nombre_colegio}/${params.id_colegio}/presupuesto`}
           className="flex items-center justify-center md:w-[14%] bg-blue-600 text-center hover:bg-blue-800 text-white font-bold text-lg"
         >
           Presupuesto

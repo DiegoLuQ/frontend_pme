@@ -7,7 +7,7 @@ function App() {
   const navigate = useNavigate()
   useEffect(() => {
     if (token) {
-      navigate('/admin/colegios')
+      navigate('/user/colegios')
     }
 
   }, [])

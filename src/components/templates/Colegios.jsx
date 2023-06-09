@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import AccionesUpdate from "../organismos/AccionesUpdate";
-import Presupuesto from "../organismos/YearsPresupuesto";
 import Pme from "./Pme";
+import { Link } from "react-router-dom";
+import ColegioContext from "../../context/ColegioProvider";
 
 function Colegios() {
   const [colegio, setColegio] = useState([]);
-  const [pme, setPme] = useState([]);
-  const [load, setLoad] = useState(true);
-
   const { data, errror, loading } = useFetch("colegio/pme/");
+
   useEffect(() => {
     if (data) {
       setColegio(data);
-      setPme(data.map((item) => item.pme_colegio));
-      setLoad(false);
     }
   }, [data]);
   if (loading) return <h1>loading</h1>;
@@ -26,7 +22,6 @@ function Colegios() {
       </div>
       <div className="flex flex-col md:flex-row md:justify-between w-8/12 m-auto mt-2">
         {colegio.map((item) => (
-          // console.log(item)
           <div
             key={item._id}
             className="flex flex-col md:w-[49%] text-center gap-2"
@@ -54,8 +49,9 @@ function Colegios() {
               <p className="flex gap-3 items-center">
                 <span className="font-bold">Telefono:</span> {item.telefono}
               </p>
-              <Pme id={item._id} colegio={item.nombre} />
+              <Pme id={item._id} colegio={item.nombre} colegioDataApi={item} />
               {/* <Presupuesto id_colegio={item._id}  colegio={item.nombre} /> */}
+              <div></div>
             </div>
             {/* <div className="flex flex-row items-center md:flex md:flex-row md:justify-center mb-4">
               <Link
@@ -79,7 +75,6 @@ function Colegios() {
           <AccionesUpdate />
         </div>
       </div>
-
     </>
   );
 }

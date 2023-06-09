@@ -25,7 +25,7 @@ const Actividades = () => {
 
   const handleCertificadoClick = (data) => {
     navigate(
-      `/admin/colegios/${params.colegio}/certificado/${params.year}/${params.id}/${params.uuid_accion}/${dataAccion.subdimensiones}`,
+      `/user/colegios/${params.colegio}/certificado/${params.year}/${params.id}/${params.uuid_accion}/${dataAccion.subdimensiones}`,
       {
         state: {
           actividad: data,

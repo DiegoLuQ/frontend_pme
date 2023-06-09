@@ -3,21 +3,30 @@ import useFetch from "../../hooks/useFetch";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../../context/AuthProvider";
 import axios from "axios";
+import useAddReq from "../../hooks/useAddReq";
+import AddItemContext from "../../context/ReqProvider";
+import ColegioContext from "../../context/ColegioProvider";
 
 const Recursos = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [recursos, setRecursos] = useState([]); // Array de actividades y sus recursos
-  const [modal, setModalVisible] = useState(false); // cuando abrimos y cerramos el modal
   const [RecursosData, setRecursosData] = useState(); // Lista de los recursos de la actividad
   const [newRecurso, setNewRecurso] = useState(""); // Agregando nuevo recurso
   const { data, error, loading } = useFetch(`recursos/${params.id}`); // la data
-  const [modalDetalle, setModalDetalle] = useState(false);
+  const [modal, setModalVisible] = useState(false); // cuando abrimos y cerramos el modal
   const [recursoReq, setRecursoReq] = useState("");
+  const [modalDetalle, setModalDetalle] = useState(false);
   const [modalReq, setModalReq] = useState(false);
-
-  const { auth } = useContext(AuthContext);
+  const [addRequerimiento, setAddRequerimiento] = useState({});
   const [btnOn, setBtnOn] = useState({}); //
+  const { auth } = useContext(AuthContext);
+  const { setRequerimientoList, requerimientoList, addActividad } =
+    useContext(AddItemContext);
+  const [cantidadReq, setCantidadReq] = useState();
+  const handleInputChangeCantidad = (e) => {
+    setCantidadReq(e.target.value);
+  };
   const options = {
     hour12: false,
     timeZone: "America/Santiago",
@@ -27,6 +36,28 @@ const Recursos = () => {
   const [hora, setHora] = useState(
     new Date().toLocaleTimeString("es-CL", options)
   );
+
+  const handleClickRequerimiento = (e) => {
+    e.preventDefault();
+    const data = {
+      cantidad: parseInt(e.target.req_cantidad.value),
+      recurso: e.target.req_recurso.value,
+      prioridad: e.target.req_prioridad.value,
+      lugar_instalacion: e.target.req_lugar.value,
+      justificacion: e.target.req_justificacion.value,
+      descripcion: e.target.req_descripcion.value || "s/d",
+      detalle: e.target.req_detalle.value || "s/d",
+    };
+    if (data) {
+      console.log(data);
+      setRequerimientoList([data, ...requerimientoList]);
+      setBtnOn({
+        ok: true,
+        msg: "Item Agregado, no actualize la página",
+        class: "text-green-500 font-semibold text-base text-center",
+      });
+    }
+  };
 
   const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
   useEffect(() => {
@@ -55,18 +86,8 @@ const Recursos = () => {
   //   })
   //   console.log(resultadosFiltrados)
   // };
-
   // UTILIZANDO REGEx
   const handleFilterRegex = () => {
-    const dataBuscar = {
-      actividad: filtroActividad,
-      recurso_interno: filtroRecurso,
-      recurso_pme: filtroRecursoPME,
-      usuario: auth.usuario,
-      fecha: fecha,
-      hora: hora,
-    };
-    console.log(dataBuscar);
     const regexActividad = new RegExp(filtroActividad, "i");
     const regexRecurso = new RegExp(filtroRecurso, "i");
     const regexRecursopme = new RegExp(filtroRecursoPME, "i");
@@ -80,13 +101,34 @@ const Recursos = () => {
       );
       return actividadCoincide && recursoCoincide && recursoPME;
     });
-    setRecursos(resultadoFiltrado);
+    if (resultadoFiltrado) {
+      setRecursos(resultadoFiltrado);
+      const dataBuscar = {
+        actividad: filtroActividad,
+        recurso_interno: filtroRecurso,
+        recurso_pme: filtroRecursoPME,
+        usuario: auth.usuario,
+        area: auth.area,
+        fecha: fecha,
+        hora: hora,
+        data: resultadoFiltrado,
+        data_length: resultadoFiltrado.length,
+      };
+      if (dataBuscar.data.length == 0) {
+        console.log(dataBuscar);
+        return;
+      }
+      if (dataBuscar.data.length > 4) {
+        console.log(dataBuscar);
+      }
+    }
   };
 
   const onModal = (data) => {
     setModalVisible(true);
     if (data) {
       setRecursosData(data);
+      console.log(data);
     }
   };
   const closeModal = () => {
@@ -107,6 +149,12 @@ const Recursos = () => {
     setModalReq(true);
     if (data) {
       setRecursosData(data);
+      addActividad({
+        accion: data.accion.nombre_accion,
+        dimension: data.accion.dimension,
+        subdimension: data.subdimension,
+        actividad: data.nombre_actividad,
+      });
     }
   };
   const handleInputChangeNewRecurso = (e) => {
@@ -128,15 +176,20 @@ const Recursos = () => {
       setNewRecurso(e.target.value.toLowerCase());
     }
   };
-  const handleAddItem = () => {
+  const handleAddItem = (e) => {
     if (newRecurso.trim() !== "") {
       RecursosData.recursos_actividad.push(newRecurso);
+      console.log(RecursosData);
       setNewRecurso("");
     }
   };
 
-  const handleUpdateActividad = () => {
+  //botton de Modificar Recursos
+  const handleUpdateActividad = (e) => {
+    e.preventDefault();
     const id_actividad = RecursosData._id;
+    const nombre_actividad_updated = e.target.actividad.value;
+    RecursosData.nombre_actividad = nombre_actividad_updated.toLowerCase();
     const objParaEnviar = { ...RecursosData };
     delete objParaEnviar._id;
     delete objParaEnviar.accion;
@@ -154,14 +207,13 @@ const Recursos = () => {
           msg: "Recurso de Actividad Modificada",
           class: "text-green-500 font-semibold text-base text-center",
         });
-        console.log(resp);
       });
   };
   // usamo el hook useNavigate para enviar parametros y un state al
   // componente de Certificado
   const handleCertificadoClick = (data) => {
     navigate(
-      `/admin/colegios/${params.name_colegio}/certificado/${params.year}/${params.id}/${data.uuid_accion}/${data.subdimension}`,
+      `/user/colegios/${params.name_colegio}/certificado/${params.year}/${params.id}/${data.uuid_accion}/${data.subdimension}`,
       {
         state: {
           actividad: data.nombre_actividad,
@@ -169,6 +221,13 @@ const Recursos = () => {
       }
     );
   };
+
+  const handleAgregarActividad = () => {
+    navigate(
+      `/user/colegios/${params.name_colegio}/recursos/${params.year}/${params.id}/registrar_actividad`
+    );
+  };
+
   const handleIndexRecurso = (index) => {
     if (index >= 0) {
       const updateDataRecursos = { ...RecursosData };
@@ -183,7 +242,6 @@ const Recursos = () => {
       <h1 className="font-bold text-2xl md:text-5xl text-center text-gray-600 mb-4">
         Recursos de Actividades - {params.name_colegio}
       </h1>
-
       <div className="bg-teal-700 p-2 flex flex-col gap-2 items-center justify-between md:flex md:flex-row rounded-xl">
         <div className="flex gap-2">
           <input
@@ -218,79 +276,42 @@ const Recursos = () => {
           </button>
         </div>
         <div className="flex gap-2">
-          <button className="py-2 px-3 bg-green-600 hover:bg-green-500 text-white hover:text-black rounded-xl">
-            Nueva Actividad
-          </button>
-          <button className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl">
-            Descargar Excel
-          </button>
+          {auth.admin ? (
+            <div className="flex gap-2">
+              <button
+                // onClick={() => handleAgregarActividad()}
+                className="py-2 px-3 bg-green-600 hover:bg-green-500 text-white hover:text-black rounded-xl"
+              >
+                Nueva Actividad
+              </button>
+              <button className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl">
+                Descargar Excel
+              </button>
+              <Link
+                to={`/user/usuarios/gestion/req`}
+                className="py-2 px-3 bg-blue-500 hover:bg-blue-400 text-white hover:text-black rounded-xl"
+              >
+                Requerimiento
+              </Link>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              {" "}
+              <Link
+                to={`/user/usuarios/gestion/req`}
+                className="py-2 px-3 bg-blue-500 hover:bg-blue-400 text-white hover:text-black rounded-xl"
+              >
+                Requerimiento
+              </Link>
+              <button className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl">
+                Descargar Excel
+              </button>{" "}
+            </div>
+          )}
         </div>
       </div>
       <div className="w-full mt-2">
         <table className="w-full ">
-          {/* <caption className="p-3">
-            <nav aria-label="Page navigation example" className="">
-              <ul className="inline-flex -space-x-px">
-                <li>
-                  <a
-                    href="#"
-                    className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                  >
-                    Atras
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                  >
-                    1
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                  >
-                    2
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    aria-current="page"
-                    className="px-3 py-2 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                  >
-                    3
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                  >
-                    4
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                  >
-                    5
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                  >
-                    Adelante
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </caption> */}
           <thead className="">
             <tr className="">
               <th className="text-start border p-2"></th>
@@ -319,7 +340,7 @@ const Recursos = () => {
                 <td className="border p-2">
                   <Link
                     className="text-blue-600 hover:text-blue-800 font-semibold"
-                    to={`/admin/colegios/${params.name_colegio}/actividades/${params.year}/${params.id}/${item.uuid_accion}`}
+                    to={`/user/colegios/${params.name_colegio}/actividades/${params.year}/${params.id}/${item.uuid_accion}`}
                   >
                     {item.uuid_accion}{" "}
                   </Link>{" "}
@@ -331,7 +352,7 @@ const Recursos = () => {
                       onClick={() => handleCertificadoClick(item)}
                       className="font-bold text-xs px-2 hover:bg-green-600 bg-green-500 py-1 rounded-2xl"
                     >
-                      Certificado
+                      Certif.
                     </button>
                     <button
                       onClick={() => onModalDetalle(item)}
@@ -339,12 +360,12 @@ const Recursos = () => {
                     >
                       Detalle
                     </button>
-                    {/* <button
+                    <button
                       onClick={() => onModalReq(item)}
                       className="text-white font-bold text-xs px-2 hover:bg-blue-500 bg-blue-400 py-1 rounded-2xl"
                     >
-                      Req
-                    </button> */}
+                      Requer.
+                    </button>
                   </div>
                 </td>
                 {auth.admin && (
@@ -367,7 +388,10 @@ const Recursos = () => {
             aria-hidden="true"
             className="fixed inset-0 flex items-center justify-center z-50"
           >
-            <div className="fixed inset-0 bg-black opacity-25"></div>
+            <div
+              className="fixed inset-0 bg-black opacity-25"
+              onClick={closeModal}
+            ></div>
             <div className="relative w-full max-w-2xl md:max-w-4xl max-h-full">
               <div className="relative rounded-lg shadow dark:bg-gray-700 bg-gray-700">
                 <button
@@ -394,17 +418,13 @@ const Recursos = () => {
                   <h3 className="mb-4 text-xl font-medium text-white">
                     Modificar recursos de la actividad
                   </h3>
-                  <div className="space-y-6">
+                  <form className="space-y-6" onSubmit={handleUpdateActividad}>
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-white"
-                      >
+                      <label className="block mb-2 text-sm font-medium text-white">
                         Actividad
                       </label>
                       <input
-                        name="nombre_actividad"
-                        id="nombre_actividad"
+                        name="actividad"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                         placeholder="actividad"
                         defaultValue={RecursosData.nombre_actividad}
@@ -413,10 +433,7 @@ const Recursos = () => {
                     </div>
                     <div>
                       <div className="">
-                        <label
-                          htmlFor="email"
-                          className="block mb-2 text-sm font-medium text-white"
-                        >
+                        <label className="block mb-2 text-sm font-medium text-white">
                           Nuevo recurso
                         </label>
                         <div className="">
@@ -429,7 +446,8 @@ const Recursos = () => {
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                             />
                             <button
-                              onClick={handleAddItem}
+                              type="button"
+                              onClick={() => handleAddItem()}
                               disabled={btnOn.ok}
                               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-2 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                             >
@@ -469,39 +487,13 @@ const Recursos = () => {
                         ))}
                       </ul>
                     </div>
-                    {/* <div className="flex justify-between">
-                      <div className="flex items-start">
-                        <div className="flex items-center h-5">
-                          <input
-                            id="remember"
-                            type="checkbox"
-                            value=""
-                            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-600 dark:border-gray-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
-                            required
-                          />
-                        </div>
-                        <label
-                          htmlFor="remember"
-                          className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                        >
-                          Remember me
-                        </label>
-                      </div>
-                      <a
-                        href="#"
-                        className="text-sm text-blue-700 hover:underline dark:text-blue-500"
-                      >
-                        Lost Password?
-                      </a>
-                    </div> */}
                     <button
                       type="submit"
-                      onClick={handleUpdateActividad}
                       className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                     >
                       Modificar Recursos
                     </button>
-                  </div>
+                  </form>
                 </div>
               </div>
             </div>
@@ -516,7 +508,7 @@ const Recursos = () => {
             className="fixed inset-0 flex items-center justify-center z-50"
           >
             <div
-              onClick={() => console.log("Hola")}
+              onClick={closeModal}
               className="fixed inset-0 bg-black opacity-25"
             ></div>
             <div className="relative w-full max-w-2xl md:max-w-4xl max-h-full">
@@ -545,150 +537,144 @@ const Recursos = () => {
                   <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">
                     Agregar recurso a requerimiento
                   </h3>
-                  <div className="space-y-6">
+                  <form
+                    className="space-y-6"
+                    onSubmit={handleClickRequerimiento}
+                  >
                     <div>
                       <div className="flex gap-2">
                         <div className="w-6/12">
-                          <label
-                            htmlFor="email"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                          >
-                            Recurso para Requerimiento
+                          <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Recurso
                           </label>
                           <input
-                            name="nombre_actividad"
-                            id="nombre_actividad"
+                            name="req_recurso"
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                            placeholder="actividad"
-                            value={recursoReq}
-                            required
-                            autoComplete={"off"}
+                            placeholder="Selecciona un Recurso para el requerimiento"
+                            defaultValue={recursoReq}
+                            disabled={true}
                           />
                         </div>
                         <div className="w-6/12">
-                          <label
-                            htmlFor="email"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                          >
+                          <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Cantidad
                           </label>
                           <input
-                            name="nombre_actividad"
+                            name="req_cantidad"
                             type="number"
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                             required
-                            autoComplete={"off"}
-                            defaultValue={1}
-                            min={0}
+                            min={1}
+                            defaultValue="1"
                           />
                         </div>
                       </div>
 
                       <div className="flex gap-2 mt-2 flex-wrap">
                         {RecursosData.recursos_actividad.map((item, index) => (
-                          <button
+                          <a
+                            key={index}
                             onClick={() => setRecursoReq(item)}
-                            className="text-white p-1 border bg-sky-800 hover:bg-sky-700"
+                            className="cursor-pointer text-white p-1 border bg-sky-800 hover:bg-sky-700"
                           >
                             {item}
-                          </button>
+                          </a>
                         ))}
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <div className="w-6/12">
-                        <label
-                          htmlFor="email"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
+                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                           Prioridad
                         </label>
                         <select
-                          name=""
-                          id=""
+                          name="req_prioridad"
                           className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
                         >
-                          <option value="">Seleccionar...</option>
+                          {" "}
                           <option value="normal">Normal</option>
                           <option value="medio">Medio</option>
                           <option value="urgente">Urgente</option>
-                          <option value="presupuesto">Presupuest</option>
+                          <option value="presupuesto">Presupuesto</option>
                         </select>
                       </div>
                       <div className="w-6/12">
-                        <label
-                          htmlFor="email"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Area/Lugar
+                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                          Area/Lugar de Instalación
                         </label>
                         <input
-                          name="nombre_actividad"
-                          id="nombre_actividad"
+                          name="req_lugar"
                           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                          placeholder="Breve descripción del recurso solicitado"
+                          placeholder="Lugar de Instalación - ej: Oficina de director"
                           required
                           autoComplete={"off"}
                         />
                       </div>
                     </div>
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Detalle
-                      </label>
-                      <input
-                        name="nombre_actividad"
-                        id="nombre_actividad"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                        placeholder="Detalle o S/D"
-                        autoComplete={"off"}
-                        required
-                      />
+                    <div className="flex gap-2">
+                      <div className="w-6/12">
+                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                          Detalle
+                        </label>
+                        <input
+                          name="req_detalle"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                          placeholder="Detalle del recurso - ej: tinta de impresora verde"
+                          autoComplete={"off"}
+                          required
+                        />
+                      </div>
+                      <div className="w-6/12">
+                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                          Justificación
+                        </label>
+                        <input
+                          name="req_justificacion"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                          placeholder="Porqué del recurso solicitado - ej: se acabo la tinta verde"
+                          required
+                          autoComplete={"off"}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Justificación
-                      </label>
-                      <input
-                        name="nombre_actividad"
-                        id="nombre_actividad"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                        placeholder="Porqué del recurso solicitado"
-                        required
-                        autoComplete={"off"}
-                      />
+                    <div className="flex gap-2 items-center">
+                      <div className="w-6/12">
+                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                          Descripción
+                        </label>
+                        <input
+                          name="req_descripcion"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                          placeholder="en caso de ser necesario o S/D"
+                          required
+                          autoComplete={"off"}
+                        />
+                      </div>
+                      <div className="w-6/12">
+                        <p className={btnOn.class}>
+                          {btnOn.msg} -{" "}
+                          <span className="text-white">Cantidad de items </span>
+                          <span className="text-red-400 font-bold text-xl">
+                            {requerimientoList.length}
+                          </span>{" "}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    <div className="flex justify-between gap-2">
+                      <button
+                        type="submit"
+                        className="w-8/12 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                       >
-                        Descripción
-                      </label>
-                      <input
-                        name="nombre_actividad"
-                        id="nombre_actividad"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                        placeholder="Breve descripción del recurso solicitado"
-                        required
-                        autoComplete={"off"}
-                      />
+                        Agregar recurso para Requerimiento
+                      </button>
+                      <Link
+                        to={`/user/usuarios/gestion/req`}
+                        className="w-4/12 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-blue-800"
+                      >
+                        Ir a requerimiento
+                      </Link>
                     </div>
-
-                    <button
-                      type="submit"
-                      onClick={handleUpdateActividad}
-                      className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                    >
-                      Modificar Recursos
-                    </button>
-                  </div>
+                  </form>
                 </div>
               </div>
             </div>
@@ -702,7 +688,10 @@ const Recursos = () => {
             aria-hidden="true"
             className="fixed inset-0 flex items-center justify-center z-50"
           >
-            <div className="fixed inset-0 bg-black opacity-25"></div>
+            <div
+              className="fixed inset-0 bg-black opacity-25"
+              onClick={closeModal}
+            ></div>
             <div className="relative w-full max-w-2xl md:max-w-4xl max-h-full">
               <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
                 <button
@@ -731,10 +720,7 @@ const Recursos = () => {
                   </h3>
                   <div className="space-y-2">
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-base font-medium text-teal-400"
-                      >
+                      <label className="block text-base font-medium text-teal-400">
                         Dimensión
                       </label>
                       <p className="text-white font-semi italic">
@@ -742,10 +728,7 @@ const Recursos = () => {
                       </p>
                     </div>
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-base font-medium text-teal-400"
-                      >
+                      <label className="block text-base font-medium text-teal-400">
                         Sub Dimensión
                       </label>
                       <p className="text-white font-semi italic">
@@ -753,10 +736,7 @@ const Recursos = () => {
                       </p>
                     </div>
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-base font-medium text-teal-400"
-                      >
+                      <label className="block text-base font-medium text-teal-400">
                         Actividad
                       </label>
                       <p className="text-white font-semi italic">
@@ -764,10 +744,7 @@ const Recursos = () => {
                       </p>
                     </div>
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-base font-medium text-teal-400"
-                      >
+                      <label className="block text-base font-medium text-teal-400">
                         Medios de verificación
                       </label>
                       <p className="text-white font-semi italic">
@@ -775,10 +752,7 @@ const Recursos = () => {
                       </p>
                     </div>
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-base font-medium text-teal-400"
-                      >
+                      <label className="block text-base font-medium text-teal-400">
                         Area o Responsable
                       </label>
                       <p className="text-white font-semi italic">
@@ -786,10 +760,7 @@ const Recursos = () => {
                       </p>
                     </div>
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-base font-medium text-teal-400"
-                      >
+                      <label className="block text-base font-medium text-teal-400">
                         Descripción
                       </label>
                       <p className="text-white font-semi italic">
@@ -797,10 +768,7 @@ const Recursos = () => {
                       </p>
                     </div>
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-base font-medium text-teal-400"
-                      >
+                      <label className="block text-base font-medium text-teal-400">
                         Acción PME Mineduc
                       </label>
                       <p className="text-white font-semi italic">

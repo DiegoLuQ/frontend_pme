@@ -70,7 +70,7 @@ const Macaya = () => {
             key={item._id}
           >
             <Link
-              to={`/admin/colegios/${params.colegio}/actividades/${params.year}/${params.id}/${item.uuid_accion}`}
+              to={`/user/colegios/${params.colegio}/actividades/${params.year}/${params.id}/${item.uuid_accion}`}
               className="flex gap-2 hover:bg-gray-300 duration-300 ease-in-out hover:rounded-lg rounded-lg px-2 w-[100%]"
             >
               <p>{index + 1}</p>
@@ -86,7 +86,7 @@ const Macaya = () => {
             </Link>
             <div className="flex gap-2">
               <Link
-                to={`/admin/colegios/${params.colegio}/actividades/${params.year}/${params.id}/${item.uuid_accion}`}
+                to={`/user/colegios/${params.colegio}/actividades/${params.year}/${params.id}/${item.uuid_accion}`}
                 className="hidden md:block px-3 bg-teal-700 hover:bg-teal-600 rounded-lg font-semibold text-white text-center"
               >
                 Ver

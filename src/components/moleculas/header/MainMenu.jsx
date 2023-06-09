@@ -19,7 +19,7 @@ const MainMenu = () => {
           </Link>
         ) : (
           <div className="py-5">
-            <Link to={'/admin/colegios'} className="hover:bg-teal-600 py-5 px-4 text-white">
+            <Link to={'/user/colegios'} className="hover:bg-teal-600 py-5 px-4 text-white">
               Colegios
             </Link>
             <Link

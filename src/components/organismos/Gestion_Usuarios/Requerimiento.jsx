@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import generarId from "../../../helpers/GenerarId";
-import Fecha from "../../atomos/Fecha";
 import Input_Label from "../../atomos/Input_Label";
 import OptionList from "../../atomos/OptionList";
-import PrimaryBtn from "../../atomos/PrimaryBtn";
 import getFileNameWithNewExtension from "../../../helpers/NameImage";
+import AuthContext from "../../../context/AuthProvider";
+import AddItemContext from "../../../context/ReqProvider";
+import ColegioContext from "../../../context/ColegioProvider";
+import ReqGestionContext from "../../../context/ReqGestionProvider";
 const Requerimiento = () => {
   const params = useParams();
-  const img_dpmc = params.nombre_colegio == "Macaya" ? "MC" : "DP";
+  const navigate = useNavigate();
 
   const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
   const options = {
@@ -21,181 +23,269 @@ const Requerimiento = () => {
     new Date().toLocaleTimeString("es-CL", options)
   );
 
+  const [btnOn, setBtnOn] = useState({}); //
+  const { auth } = useContext(AuthContext);
+  const {
+    requerimientoList,
+    accionPME,
+    removeItem,
+    setRequerimientoList,
+    setAccionPME,
+  } = useContext(AddItemContext);
+  const { addRequerimientoColegio, getRequerimiento, requerimientoColegio } =
+    useContext(ReqGestionContext);
+  const { colegioInfo, addColegio } = useContext(ColegioContext);
+  const [imgColegio, setImaColegio] = useState("");
+  const [titleColegio, setTitleColegio] = useState("");
+  const [urlActividad, setUrlActividad] = useState("");
+  const [requerimientoAccion, setRequerimientoAccion] = useState({});
+  const [recurso, setRecurso] = useState({});
+
+  const [datosParaRequerimiento, setDatosParaRequerimiento] = useState({});
+  window.addEventListener("beforeunload", () => {
+    const data = localStorage.getItem("colegioInfo");
+    addColegio(JSON.parse(data));
+  });
+
+  const [img_dpmc, setImg_DPMC] = useState();
   const [value_id, setValue_id] = useState(generarId(img_dpmc));
-  const [listaRequerimiento, setListaRequerimiento] = useState([]);
-  const [requirement, setRequirement] = useState({});
-  const [image, setImagen] = useState(null);
-  const [imagenes, setImagenes] = useState(null);
-  const [imagenesRender, setImagenesRender] = useState([]);
-  const [nombreImagen, setNombreImage] = useState([]);
-  const newNameFile = [];
-  const img_colegio =
-    params.nombre_colegio == "Macaya"
-      ? "https://i.postimg.cc/25sLgMny/mc.png"
-      : "https://i.postimg.cc/2SXZ7V64/dp.png";
-  const val_colegio =
-    params.nombre_colegio == "Macaya"
-      ? "Colegio Macaya"
-      : "Colegio Diego Portales";
+  useEffect(() => {
+    setRequerimientoAccion(accionPME);
+  }, []);
 
-  const addRequerimiento = (requerimiento) => {
-    setListaRequerimiento([...listaRequerimiento, requerimiento]);
-  };
+  const handleVisualizarRequerimiento = () => {
+    // const dataTest = requerimientoColegio.codigo_req = generarId(img_dpmc)
 
-  const handleInputChangue = (e) => {
-    const { name, value } = e.target;
-    setRequirement({ ...requirement, [name]: value });
-  };
-
-  const handleImageChange = (e) => {
-    const selectImage = e.target.files[0];
-    if (selectImage) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagen(e.target.result);
-      };
-      reader.readAsDataURL(selectImage);
-      console.log(reader);
-    } else {
-      setImagen(null);
+    if (Object.keys(requerimientoColegio).length > 0) {
+      const newCodigo_req = generarId(img_dpmc);
+      requerimientoColegio.requerimientos = requerimientoList
+      console.log(requerimientoColegio)
+      navigate(`/user/usuarios/gestion/req/${newCodigo_req}`);
+      return;
     }
+
+    // en caso de que el Context de Crear requerimiento no tenga datos y se deba llenar ciertos campos
+    if (Object.keys(datosParaRequerimiento).length === 0) {
+      console.log("debe llenar los campos de informacion en amarillo");
+      setBtnOn({
+        ok: true,
+        msg: "Debe llenar los campos de información en amarillo",
+        class: "text-red-500 font-semibold text-base text-center",
+      });
+      return;
+    }
+    navigate(
+      `/user/usuarios/gestion/req/${
+        document.getElementsByName("value_id")[0].value
+      }`
+    );
+
+    const { area, cargo, usuario } = auth;
+    const nombre_colegio = colegioInfo.data.nombre;
+    const id_pme = colegioInfo.pme._id;
+    addRequerimientoColegio({
+      codigo_req: generarId(img_dpmc),
+      usuario,
+      area,
+      cargo,
+      nombre_colegio,
+      id_pme,
+      fecha,
+      hora,
+      accion: requerimientoAccion,
+      requerimientos: requerimientoList, //arrelgar - se demora en guardar
+      info: datosParaRequerimiento,
+    });
   };
 
-  const handleManyImages = (e) => {
-    const selectImages = e.target.files;
-    const urls = [];
-    for (let i = 0; i < selectImages.length; i++) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        urls.push(e.target.result);
-        if (urls.length === selectImages.length) {
-          setImagenes(urls);
-        }
-      };
-      reader.readAsDataURL(selectImages[i]);
-    }
-  };
-  const handleImagenesChangeRender = (e) => {
-    const selectedImages = e.target.files;
-    const urls = [];
-    for (let i = 0; i < selectedImages.length; i++) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
-          canvas.width = 500;
-          canvas.height = 500;
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          const url = canvas.toDataURL("image/jpeg", 0.8);
-          urls.push(url);
+  const handleInputChangeDatos = (e) => {
+    setDatosParaRequerimiento({
+      ...datosParaRequerimiento,
+      [e.target.name]: e.target.value,
+    });
 
-          const new_name = getFileNameWithNewExtension(
-            selectedImages[i],
-            "jpg"
-          );
-          newNameFile.push(new_name);
-          if (urls.length === selectedImages.length) {
-            setImagenesRender(urls);
-            setNombreImage(newNameFile);
-          }
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(selectedImages[i]);
-      console.log(nombreImagen);
-    }
   };
+
+  useEffect(() => {
+    if (colegioInfo.data) {
+      const data = colegioInfo;
+      setImg_DPMC(data.data.nombre == "Macaya" ? "MC-" : "DP-");
+
+      data.data.nombre == "Macaya"
+        ? setImaColegio("https://i.postimg.cc/fbXSL2zp/mc.png")
+        : setImaColegio("https://i.postimg.cc/QdvWjG3c/dp.png");
+
+      data.data.nombre == "Macaya"
+        ? setTitleColegio("Colegio Macaya")
+        : setTitleColegio("Colegio Diego Portales");
+
+      data.data &&
+        setUrlActividad(
+          `/user/colegios/${data.data.nombre}/recursos/${data.pme.year}/${data.pme._id}`
+        );
+    }
+  });
+
   const handleRequerimiento = (e) => {
     e.preventDefault();
-    if (e.target.prioridad.value == "Seleccionar prioridad...") {
+    if (e.target.req_prioridad.value == "Seleccionar prioridad...") {
       return false;
     }
+
     const datos = {
-      cantidad: parseInt(e.target.cantidad.value),
-      area_instalacion: e.target.area_instalacion.value,
-      motivo: e.target.motivo.value,
-      prioridad: e.target.prioridad.value,
-      descripcion: e.target.descripcion.value,
+      cantidad: parseInt(e.target.req_cantidad.value),
+      recurso: e.target.req_recurso.value,
+      prioridad: e.target.req_prioridad.value,
+      lugar_instalacion: e.target.area_instalacion.value,
+      justificacion: e.target.req_justificacion.value,
+      descripcion: e.target.req_descripcion.value,
+      detalle: e.target.req_detalle.value,
     };
     addRequerimiento(datos);
-    console.log(listaRequerimiento);
-    // setRequirement({
-    //   cantidad: 0,
-    //   area_instalacion: "",
-    //   motivo: "",
-    //   prioridad: "",
-    //   descripcion: "",
-    // });
+  };
+
+  const addRequerimiento = (requerimiento) => {
+    console.log(requerimiento)
+    setRequerimientoList([...requerimientoList, requerimiento]);
   };
 
   const handleEliminarRequerimiento = (index) => {
-    const newRequerimiento = [...listaRequerimiento];
-    newRequerimiento.splice(index, 1);
-    setListaRequerimiento(newRequerimiento);
+    removeItem(index);
   };
+  const handleEditarRequerimiento = (requerimiento, index) => {
+    console.log(requerimiento);
+    document.getElementsByName("req_recurso")[0].value = requerimiento.recurso;
+    document.getElementsByName("req_detalle")[0].value = requerimiento.detalle;
+
+    document.getElementsByName("area_instalacion")[0].value =
+      requerimiento.lugar_instalacion;
+    document.getElementsByName("req_descripcion")[0].value =
+      requerimiento.descripcion;
+    document.getElementsByName("req_justificacion")[0].value =
+      requerimiento.justificacion;
+    document.getElementsByName("req_cantidad")[0].value =
+      requerimiento.cantidad;
+    document.getElementsByName("req_prioridad")[0].value =
+      requerimiento.prioridad;
+    handleEliminarRequerimiento(index);
+  };
+
+  const handleLimpiarInputsReq = () => {
+    setRecurso("");
+    document.getElementsByName("req_recurso")[0].value = "";
+    document.getElementsByName("area_instalacion")[0].value = "";
+    document.getElementsByName("req_descripcion")[0].value = "";
+    document.getElementsByName("req_detalle")[0].value = "";
+    document.getElementsByName("req_justificacion")[0].value = "";
+  };
+
+  const handleBuscarReq = async (codigo_req) => {
+    const { data } = await getRequerimiento(codigo_req);
+    if (data) {
+      {
+        if (data.requerimientos.length > 0) {
+          setRequerimientoList(data.requerimientos);
+          document.getElementsByName("req_para")[0].value = data.info.req_para
+          document.getElementsByName("req_tipo")[0].value = data.info.req_tipo
+          
+        }
+      }
+    }
+    document.getElementsByName("req_accion")[0].value = data.accion.accion;
+    document.getElementsByName("req_dimension")[0].value =
+      data.accion.dimension;
+    document.getElementsByName("req_subdimension")[0].value =
+      data.accion.subdimension;
+    document.getElementsByName("req_actividad")[0].value =
+      data.accion.actividad;
+    addRequerimientoColegio(data);
+  };
+  const handleNuevoRequerimiento = () => {
+    document.getElementsByName("value_id")[0].value = generarId(img_dpmc);
+    addRequerimientoColegio({})
+    setRequerimientoList([])
+    setValue_id(document.getElementsByName("value_id")[0].value);
+    document.getElementsByName("req_accion")[0].value = "";
+    document.getElementsByName("req_dimension")[0].value =""
+    document.getElementsByName("req_subdimension")[0].value =""
+    document.getElementsByName("req_actividad")[0].value =""
+    document.getElementsByName("req_para")[0].value = ""
+    document.getElementsByName("req_tipo")[0].value = ""
+    
+  }
   return (
-    <div className="mt-4 border rounded-lg p-3 w-12/12">
+    <div className="mt-4 border rounded-lg w-[1440px] m-auto">
       <div className="w-12/12 md:w-8/12 m-auto">
         <div className="flex justify-between items-center">
           <div className="flex flex-col text-center">
             <div className="flex text-center justify-center">
-              <img src={img_colegio} alt="" width="65px" />
+              <img src={imgColegio} alt="" width="65px" />
             </div>
-            <p>{val_colegio}</p>
+            <p>{titleColegio}</p>
             <p>Alto Hospicio</p>
           </div>
-          <div className="text-2xl font-semibold">{value_id}</div>
+          <div className="flex flex-col gap-2">
+            <input
+              name="value_id"
+              className="text-2xl font-semibold text-center block outline-none border "
+              // defaultValue={value_id}
+              defaultValue={img_dpmc && value_id ? generarId(img_dpmc) : ""}
+            />
+            <div className="flex justify-between">
+              <button
+                onClick={() => handleNuevoRequerimiento()}
+                className="bg-blue-200 hover:bg-blue-300 px-2 py-1 rounded-sm shadow "
+              >
+                Nuevo Req.
+              </button>
+              <button
+                onClick={() =>
+                  handleBuscarReq(
+                    document.getElementsByName("value_id")[0].value
+                  )
+                }
+                className="bg-blue-200 hover:bg-blue-300 px-2 py-1 rounded-sm shadow "
+              >
+                Buscar Req.
+              </button>
+            </div>
+          </div>
         </div>
         <h1 className="my-4 text-base text-center md:text-2xl font-bold">
           SOLICITUD DE REQUERIMIENTOS OPERATIVOS (REPARACION-MANTENCION DE
-          INFRAESTRUCTURA Y/O COMPRA DE ACTIVOS COLEGIO MACAYA)
+          INFRAESTRUCTURA Y/O COMPRA DE ACTIVOS)
         </h1>
-        <div className="">
-          <OptionList
-            name="area"
-            value_label="De"
-            value_option="Buscar area..."
-            lista={[
-              "Dirección",
-              "Inspectoria",
-              "UTP Básica",
-              "UTP Media",
-              "Pre Básica",
-              "Finanzas",
-              "Contabilidad",
-              "PIE",
-            ]}
-          />
-          <OptionList
-            name="subarea"
-            value_label="Sub Areas"
-            value_option="Buscar sub area..."
-            lista={[
-              "Patio 1",
-              "Patio 2",
-              "Oficina",
-              "Escaleras",
-              "Cancha de Futbol",
-              "Cancha de Voley",
-              "Auditorio",
-              "Sala Audiovisual",
-              "Biblioteca",
-              "Sala de clase",
-              "Sala de profesores",
-              "Oficina de Dirección",
-              "Oficina de UTP",
-              "Oficina de Inspectoria",
-            ]}
-          />
-          <Input_Label value_label="Para quien va dirigido" placeholder="" />
+        <form className="border p-2">
+          <div className="grid grid-cols-12 gap-2 mt-2">
+            <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+              De
+            </label>
+            <input
+              type="text"
+              name="req_user"
+              defaultValue={auth.usuario}
+              className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
+            />
+          </div>
+          <div className="grid grid-cols-12 gap-2 mt-2">
+            <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+              Dependencia
+            </label>
+            <input
+              type="text"
+              name="req_dependencia"
+              defaultValue={auth.area}
+              disabled={true}
+              className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
+            />
+          </div>
           <div className="grid grid-cols-12 gap-2 mt-2">
             <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
               Fecha
             </label>
             <input
               type="date"
+              name="req_fecha"
               className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
               value={fecha}
               onChange={(e) => setFecha(e.target.value)}
@@ -206,84 +296,243 @@ const Requerimiento = () => {
               Hora
             </label>
             <input
+              name="req_hora"
               className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
               type="time"
               value={hora}
               onChange={(e) => setHora(e.target.value)}
             />
           </div>
-        </div>
+          <div className="border-t-2 px-2 my-3">
+            <div className="grid grid-cols-12 gap-2 mt-2">
+              <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+                Acción
+              </label>
+              <input
+                className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 bg-yellow-100 hover:ring-inset ring-1 ring-blue-300"
+                value={accionPME.accion}
+                name="req_accion"
+                disabled={true}
+              />
+            </div>
+            <div className="grid grid-cols-12 gap-2 mt-2">
+              <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+                Dimensión
+              </label>
+              <input
+                className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 bg-yellow-100 hover:ring-inset ring-1 ring-blue-300"
+                value={accionPME.dimension}
+                name="req_dimension"
+                disabled={true}
+              />
+            </div>
+            <div className="grid grid-cols-12 gap-2 mt-2">
+              <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+                Subdimensión
+              </label>
+              <input
+                className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 bg-yellow-100 hover:ring-inset ring-1 ring-blue-300"
+                value={accionPME.subdimension}
+                name="req_subdimension"
+                disabled={true}
+              />
+            </div>
+            <div className="grid grid-cols-12 gap-2 mt-2">
+              <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+                Actividad
+              </label>
+              <input
+                className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 bg-yellow-100 hover:ring-inset ring-1 ring-blue-300"
+                value={accionPME.actividad}
+                name="req_actividad"
+                disabled={true}
+              />
+            </div>
+            <div className="flex justify-end my-4">
+              <Link
+                to={urlActividad}
+                className="bg-sky-200 px-2 py-1 rounded-xl"
+              >
+                Buscar Actividad
+              </Link>
+            </div>
+          </div>
+          <div className="grid grid-cols-12 gap-2 mt-2">
+            <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+              Para
+            </label>
+            <select
+              type="text"
+              name="req_para"
+              onChange={handleInputChangeDatos}
+              className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 bg-yellow-100 ring-blue-300"
+            >
+              <option>Selecciona a quien va dirigido</option>
+              <option value="TIC'S">Tics</option>
+              <option value="Mantención">Mantención</option>
+              <option value="Gerencia de Operaciones">
+                Gerencia de Operaciones
+              </option>
+            </select>
+          </div>
+          <div className="grid grid-cols-12 gap-2 mt-2">
+            <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+              Tipo de Requerimiento
+            </label>
+            <select
+              type="text"
+              name="req_tipo"
+              onChange={handleInputChangeDatos}
+              className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 bg-yellow-100 ring-blue-300"
+            >
+              <option>Selecciona el tipo</option>
+              <option value="Compra">Compra</option>
+              <option value="Servicio">Servicio</option>
+              <option value="Logistica">Logística</option>
+              <option value="Servicio y Compra">Servicio y Compra</option>
+              <option value="Compra y Logistica">Compra y Logística</option>
+            </select>
+          </div>
+        </form>
         <br />
         <hr />
         <form onSubmit={handleRequerimiento}>
           <h1 className="text-3xl font-semibold">Requerimientos</h1>
           <div>
-            <Input_Label
-              value_label="Lugar/Area"
-              placeholder="Area de instalación"
-              name="area_instalacion"
-              value="Direccion"
-            />
-            <Input_Label
-              value_label="Justificación"
-              placeholder="Motivo(breve)"
-              name="motivo"
-              value="Direccion"
-            />
             <OptionList
               value_label="Prioridad"
               value_option="Seleccionar prioridad..."
               lista={["Normal", "Medio", "Urgente", "Presupuesto"]}
-              name="prioridad"
+              name="req_prioridad"
             />
+            <div className="grid grid-cols-12 gap-2 mt-2 items-center">
+              <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+                Recurso
+              </label>
+              <input
+                type="text"
+                name="req_recurso"
+                placeholder="Recurso necesario - ej: Globos"
+                required
+                className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
+              />
+            </div>
+
             <Input_Label
               value_label="Cantidad"
-              name="cantidad"
+              name="req_cantidad"
               type_="number"
               placeholder="Cantidad de compra"
               value="1"
             />
-            <Input_Label
-              value_label="Descripcion"
-              placeholder="Descripcion requerimiento"
-              name="descripcion"
-              value="Direccion"
-            />
+            <div className="grid grid-cols-12 gap-2 mt-2 items-center">
+              <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+                Detalle
+              </label>
+              <input
+                type="text"
+                name="req_detalle"
+                placeholder="Detalle - ej: Globos Verdes, 100globos verdes y 100globos azules"
+                required
+                className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
+              />
+            </div>
+            <div className="grid grid-cols-12 gap-2 mt-2 items-center">
+              <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+                Lugar/Area
+              </label>
+              <input
+                type="text"
+                name="area_instalacion"
+                placeholder="Area de instalación - ej: Escenario - recuerde enviar foto junto al requerimiento"
+                required
+                className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
+              />
+            </div>
+            <div className="grid grid-cols-12 gap-2 mt-2 items-center">
+              <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+                Justificación
+              </label>
+              <input
+                type="text"
+                name="req_justificacion"
+                placeholder="Motivo(breve) - ej: día del estudiante"
+                required
+                className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
+              />
+            </div>
+            <div className="grid grid-cols-12 gap-2 mt-2 items-center">
+              <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+                Descripción
+              </label>
+              <input
+                type="text"
+                name="req_descripcion"
+                placeholder="ej:Colocar arco de globo en la parte superior del escenario"
+                required
+                className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
+              />
+            </div>
 
-            <div className="flex justify-end">
-              <button className="text-sm md:text-base px-2 py-2 rounded-lg bg-blue-500 hover:rounded-lg hover:bg-blue-600 text-white font-bold my-3">
+            <div className="flex justify-end gap-2 items-center">
+              <button
+                type="submit"
+                className="text-sm md:text-base px-2 py-2 rounded-lg bg-blue-500 hover:rounded-lg hover:bg-blue-600 text-white font-bold my-3"
+              >
                 Agregar
               </button>
+              <p
+                onClick={() => handleLimpiarInputsReq()}
+                className="cursor-pointer text-sm md:text-base px-2 py-2 rounded-lg bg-green-600 hover:rounded-lg hover:bg-green-700 text-white font-bold my-3"
+              >
+                Limpiar
+              </p>
             </div>
           </div>
         </form>
         {/* tabla */}
         <div className="overflow-auto">
           <table className="table border w-[100%]">
-            <thead className="border-b-4">
+            <thead className="border-b-4 ">
               <tr className="text-xs md:text-base">
+                <th>Editar</th>
                 <th className="hidden md:block">Cant</th>
-                <th>Prioridad</th>
-                <th>Instalación</th>
-                <th>Motivo</th>
-                <th>Descripcion</th>
+                <th className="border">Recurso</th>
+                <th className="border">Prioridad</th>
+                <th className="border">Instalación/Lugar</th>
+                <th className="border">Motivo/justificación</th>
+                <th className="border">Descripcion</th>
+                <th className="border">Detalle</th>
                 <th>Eliminar</th>
               </tr>
             </thead>
             <tbody className="text-xs md:text-base">
-              {listaRequerimiento.map((item, index) => (
+              {requerimientoList.map((item, index) => (
                 <tr key={index}>
-                  <td className="py-3 hidden md:block">{item.cantidad}</td>
-                  <td className="py-3">{item.prioridad}</td>
-                  <td>{item.area_instalacion}</td>
-                  <td>{item.motivo}</td>
-                  <td>{item.descripcion}</td>
-                  <td>
+                  <td className="text-center">
+                    <button
+                      onClick={() => handleEditarRequerimiento(item, index)}
+                      className="bg-blue-100 px-3 rounded-lg text-md hover:bg-blue-200"
+                    >
+                      Editar
+                    </button>
+                  </td>
+                  <td className="text-center py-3 hidden md:block">
+                    {item.cantidad}
+                  </td>
+                  <td className="text-center py-3">{item.recurso}</td>
+                  <td className="text-center py-3">{item.prioridad}</td>
+                  <td className="text-center ">{item.lugar_instalacion}</td>
+                  <td className="text-center ">{item.justificacion}</td>
+                  <td className="text-center ">{item.descripcion}</td>
+                  <td className="text-center ">{item.detalle}</td>
+
+                  <td className="text-center">
                     <button
                       onClick={() => handleEliminarRequerimiento(index)}
-                      className="bg-red-100 px-3 rounded-lg text-md"
+                      className="bg-red-100 px-3 rounded-lg text-md hover:bg-red-200"
                     >
-                      ❌
+                      Eliminar
                     </button>
                   </td>
                 </tr>
@@ -294,67 +543,7 @@ const Requerimiento = () => {
             </caption>
           </table>
         </div>
-        {/* Imagenes
-        <h1>Subir una Imagen</h1>
-        <div className="my-4 mt-3">
-          <label htmlFor="imagenReq">Seleccionar imagen</label>
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          <div>
-            <img src={image} alt="" width="10%" />
-          </div>
-        </div>
-        <h1>Subir Imagenes con su prpia Resolución</h1>
-        <div className="my-4 mt-3">
-          <label htmlFor="imagenReq">Seleccionar imagen</label>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleManyImages}
-          />
 
-          {!imagenes ? (
-            <h1>Sin imagenes</h1>
-          ) : (
-            <div className="flex justify-center">
-              {imagenes.map((imagen, index) => (
-                <div key={index}>
-                  <img
-                    src={imagen}
-                    alt={`Previsualización de la imagen ${index}`}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div> */}
-        <h1>Imagenes Renderizadas</h1>
-        <div className="my-4 mt-3">
-          <label htmlFor="imagenReq">Seleccionar imagen para renderizar</label>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImagenesChangeRender}
-          />
-
-          {!imagenesRender ? (
-            <h1>Sin imagenes</h1>
-          ) : (
-            <div className="flex justify-center gap-2">
-              {imagenesRender.map((imagen, index) => (
-                <div key={index}>
-                  <img
-                    className="border"
-                    src={imagen}
-                    alt={`Previsualización de la imagen ${index}`}
-                  />
-                  <p>{nombreImagen[index]}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
         <div className="md:grid gap-3 md:grid-cols-12 mt-10">
           <div className="flex flex-col text-start justify-center md:col-span-10">
             <p className="text-sm text-gray-500">
@@ -370,16 +559,17 @@ const Requerimiento = () => {
               realizarse dentro de las 24 horas.{" "}
             </p>
           </div>
-          <div className="py-20 md:mt-0 md:col-span-2">
-            <div className=" border-t-2">
-              <p>Firma jefatura correspondiente</p>
-            </div>
-          </div>
         </div>
       </div>
-      <div className="w-12/12 flex justify-center mt-4">
-        <button className="bg-green-300 hover:bg-green-400 px-3 py-2 rounded-lg text-md text-black text-2xl">
-          Enviar requerimiento
+      <div className="w-5/12 m-auto flex justify-center mt-4 gap-2 flex-col">
+        <p className={btnOn.class}>{btnOn.msg} </p>
+        <button
+          onClick={() => {
+            handleVisualizarRequerimiento();
+          }}
+          className="my-2 text-center bg-blue-300 hover:bg-blue-400 px-3 py-2 rounded-lg text-md text-black text-2xl"
+        >
+          Visualizar Requerimiento
         </button>
       </div>
     </div>

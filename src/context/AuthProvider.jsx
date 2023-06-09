@@ -28,14 +28,10 @@ const AuthProvider = ({ children }) => {
         );
         // guardamos la data en el estado
         setAuth(data);
-
-        console.log(data);
       } catch (error) {
         // en caso de recibir el codigo 401 booramos los datos del localStorage y como consecuencia nos enviara a la /login
         if (error.response && error.response.status === 401) {
-          console.log("El token es inválido o ha expirado");
           localStorage.removeItem("token");
-          console.log(error.response);
           setAuth({});
         } else {
           console.error(error);
