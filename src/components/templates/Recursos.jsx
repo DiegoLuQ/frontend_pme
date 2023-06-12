@@ -6,6 +6,7 @@ import axios from "axios";
 import useAddReq from "../../hooks/useAddReq";
 import AddItemContext from "../../context/ReqProvider";
 import ColegioContext from "../../context/ColegioProvider";
+import { postBusquedaRequest } from "../../api/Api_busqueda";
 
 const Recursos = () => {
   const params = useParams();
@@ -23,10 +24,12 @@ const Recursos = () => {
   const { auth } = useContext(AuthContext);
   const { setRequerimientoList, requerimientoList, addActividad } =
     useContext(AddItemContext);
+  const {colegioInfo} = useContext(ColegioContext)
   const [cantidadReq, setCantidadReq] = useState();
   const handleInputChangeCantidad = (e) => {
     setCantidadReq(e.target.value);
   };
+
   const options = {
     hour12: false,
     timeZone: "America/Santiago",
@@ -87,7 +90,7 @@ const Recursos = () => {
   //   console.log(resultadosFiltrados)
   // };
   // UTILIZANDO REGEx
-  const handleFilterRegex = () => {
+  const handleFilterRegex = async () => {
     const regexActividad = new RegExp(filtroActividad, "i");
     const regexRecurso = new RegExp(filtroRecurso, "i");
     const regexRecursopme = new RegExp(filtroRecursoPME, "i");
@@ -111,15 +114,17 @@ const Recursos = () => {
         area: auth.area,
         fecha: fecha,
         hora: hora,
-        data: resultadoFiltrado,
         data_length: resultadoFiltrado.length,
+        colegio: colegioInfo.data.nombre
       };
-      if (dataBuscar.data.length == 0) {
-        console.log(dataBuscar);
+      if (dataBuscar.data_length == 0) {
+        console.log(dataBuscar)
+        await postBusquedaRequest(dataBuscar)
         return;
       }
-      if (dataBuscar.data.length > 4) {
-        console.log(dataBuscar);
+      if (dataBuscar.data_length > 4) {
+        console.log(dataBuscar)
+        await postBusquedaRequest(dataBuscar)
       }
     }
   };
