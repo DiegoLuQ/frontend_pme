@@ -20,6 +20,7 @@ import RutaProtegida from "../components/templates/RutaProtegida";
 import Prueba from "../components/templates/Prueba";
 import RegistrarActividad from "../components/templates/RegistrarActividad";
 import PDFRequerimiento from "../components/organismos/Gestion_Usuarios/PDFRequerimiento";
+import MisRequerimientos from "../components/organismos/Gestion_Usuarios/MisRequerimientos";
 
 const router = createBrowserRouter([
   {
@@ -113,6 +114,10 @@ const router = createBrowserRouter([
             path: "/user/usuarios/gestion/req/:codigo_req",
             element: <PDFRequerimiento />,
           },
+          {
+            path:"/user/usuarios/gestion/mis_requerimientos/:area",
+            element: <MisRequerimientos />
+          }
         ],
       },
     ],

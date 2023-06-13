@@ -2,6 +2,7 @@ import { createContext, useState } from "react";
 import {
   requerimientoGetRequest,
   requerimientoPostRequest,
+  requerimientosGetRequest,
 } from "../api/Api_Requerimiento";
 
 const ReqGestionContext = createContext();
@@ -18,8 +19,17 @@ const ReqGestionProvider = ({ children }) => {
   };
   const getRequerimiento = async (codigo_req) => {
     const res = await requerimientoGetRequest(codigo_req);
-    return res.data
-};
+    return res.data;
+  };
+  const getRequerimientos = async (area) => {
+    try {
+      const res = await requerimientosGetRequest(area);
+      return res.data.data
+      
+    } catch (error) {
+      console.log(error)
+    }
+  };
 
   return (
     <ReqGestionContext.Provider
@@ -28,6 +38,7 @@ const ReqGestionProvider = ({ children }) => {
         requerimientoColegio,
         postRequerimiento,
         getRequerimiento,
+        getRequerimientos
       }}
     >
       {children}

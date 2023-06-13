@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useParams } from "react-router-dom";
+import AuthContext from "../../../context/AuthProvider";
 
 const MenuUser = () => {
-  const params = useParams();
+  const {auth} = useContext(AuthContext)
   return (
     <div>
       <div className="w-[1000px] m-auto">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl text-black italic p-3">Requerimientos</h1>
+        <div className="flex justify-center items-center">
+          <h1 className="text-2xl text-black font-semibold p-3">Requerimientos</h1>
         </div>
       </div>
       <div className="flex-col flex md:flex-row flex-wrap justify-center gap-3">
@@ -18,7 +19,7 @@ const MenuUser = () => {
           Requerimientos
         </Link>
         <Link
-          // to={`/user/usuarios/gestion/req`}
+          to={`/user/usuarios/gestion/mis_requerimientos/${auth.area}`}
           className="flex items-center justify-center md:w-[14%] bg-teal-600 text-center hover:bg-teal-800 text-white font-bold text-lg"
         >
           Mis Requerimientos

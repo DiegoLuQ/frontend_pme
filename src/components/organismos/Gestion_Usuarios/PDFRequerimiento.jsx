@@ -4,16 +4,13 @@ import { HeaderPDF } from "../../moleculas/pdfRequerimiento/HeaderPDF";
 import MainPDF from "../../moleculas/pdfRequerimiento/MainPDF";
 import AccionPDF from "../../moleculas/pdfRequerimiento/AccionPDF";
 import ListaRecursos from "../../moleculas/pdfRequerimiento/ListaRecursos";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { jsPDF } from "jspdf";
 
 const PDFRequerimiento = () => {
   const params = useParams();
-  const { requerimientoColegio, postRequerimiento } =
-    useContext(ReqGestionContext);
+  const { requerimientoColegio, postRequerimiento } = useContext(ReqGestionContext);
   const doc = new jsPDF("p", "pt", "letter", "UTF8");
-
-
   const handleClick = () => {
     doc.html(document.getElementById("paraPDF"), {
       x: 10,
@@ -29,8 +26,11 @@ const PDFRequerimiento = () => {
         pdf.save("Req -" + requerimientoColegio.codigo_req + ".pdf");
       },
     });
+    requerimientoColegio.codigo_req = params.codigo_req
     postRequerimiento(requerimientoColegio);
+    navigate('/user/usuarios/gestion/req')
   };
+
   return (
     <div className=" md:block max-w-[1640px] m-auto ">
       <div
@@ -79,12 +79,13 @@ const PDFRequerimiento = () => {
         </div>
       </div>
       <div className="flex justify-center">
-        <Link
+        <button
           onClick={handleClick}
+          
           className="bg-green-300 hover:bg-green-400 px-3 py-2 rounded-lg text-md text-black text-2xl"
         >
           Crear Requerimiento
-        </Link>
+        </button>
       </div>
     </div>
   );

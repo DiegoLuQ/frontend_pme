@@ -24,7 +24,7 @@ const Recursos = () => {
   const { auth } = useContext(AuthContext);
   const { setRequerimientoList, requerimientoList, addActividad } =
     useContext(AddItemContext);
-  const {colegioInfo} = useContext(ColegioContext)
+  const { colegioInfo } = useContext(ColegioContext);
   const [cantidadReq, setCantidadReq] = useState();
   const handleInputChangeCantidad = (e) => {
     setCantidadReq(e.target.value);
@@ -108,23 +108,23 @@ const Recursos = () => {
       setRecursos(resultadoFiltrado);
       const dataBuscar = {
         actividad: filtroActividad,
+        area: auth.area,
+        data_length: resultadoFiltrado.length,
+        fecha: fecha,
+        hora: hora,
         recurso_interno: filtroRecurso,
         recurso_pme: filtroRecursoPME,
         usuario: auth.usuario,
-        area: auth.area,
-        fecha: fecha,
-        hora: hora,
-        data_length: resultadoFiltrado.length,
-        colegio: colegioInfo.data.nombre
+        colegio: colegioInfo.data.nombre,
       };
-      if (dataBuscar.data_length == 0) {
-        console.log(dataBuscar)
-        await postBusquedaRequest(dataBuscar)
+      if (dataBuscar.data_length === 0) {
+        console.log(dataBuscar);
+        // await postBusquedaRequest(dataBuscar);
         return;
       }
       if (dataBuscar.data_length > 4) {
-        console.log(dataBuscar)
-        await postBusquedaRequest(dataBuscar)
+        console.log(dataBuscar);
+        await postBusquedaRequest(dataBuscar);
       }
     }
   };
@@ -161,6 +161,15 @@ const Recursos = () => {
         actividad: data.nombre_actividad,
       });
     }
+  };
+  const handleReqSinActividad = () => {
+    addActividad({
+      accion: "sin acción",
+      dimension: "sin dimensión",
+      subdimension: "sin subdimensión",
+      actividad: "sin actividad",
+    });
+    navigate(`/user/usuarios/gestion/req`);
   };
   const handleInputChangeNewRecurso = (e) => {
     const recurso_nuevo = e.target.value.toLowerCase();
@@ -247,6 +256,56 @@ const Recursos = () => {
       <h1 className="font-bold text-2xl md:text-5xl text-center text-gray-600 mb-4">
         Recursos de Actividades - {params.name_colegio}
       </h1>
+      <div className="my-2">
+        {auth.admin ? (
+          <div className="flex justify-between w-full">
+            <div className="flex gap-2">
+              <button
+                // onClick={() => handleAgregarActividad()}
+                className="py-2 px-3 bg-green-600 hover:bg-green-500 text-white hover:text-black rounded-xl"
+              >
+                Nueva Actividad
+              </button>
+              <button className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl">
+                Descargar Excel
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <Link
+                to={`/user/usuarios/gestion/req`}
+                className="py-2 px-3 bg-blue-500 hover:bg-blue-400 text-white hover:text-black rounded-xl"
+              >
+                Ir Requerimiento
+              </Link>
+              <button
+                onClick={() => handleReqSinActividad()}
+                className="py-2 px-3 bg-gray-500 hover:bg-gray-400 text-white hover:text-black rounded-xl"
+              >
+                Crear Requerimiento sin actividad
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex gap-2 justify-end">
+            {" "}
+            <Link
+              to={`/user/usuarios/gestion/req`}
+              className="py-2 px-3 bg-blue-500 hover:bg-blue-400 text-white hover:text-black rounded-xl"
+            >
+              Ir Requerimiento
+            </Link>
+            <button className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl">
+              Descargar Excel
+            </button>{" "}
+            <button
+              onClick={() => handleReqSinActividad()}
+              className="py-2 px-3 bg-gray-500 hover:bg-gray-400 text-white hover:text-black rounded-xl"
+            >
+              Requerimiento sin actividad
+            </button>
+          </div>
+        )}
+      </div>
       <div className="bg-teal-700 p-2 flex flex-col gap-2 items-center justify-between md:flex md:flex-row rounded-xl">
         <div className="flex gap-2">
           <input
@@ -280,41 +339,8 @@ const Recursos = () => {
             Buscar
           </button>
         </div>
-        <div className="flex gap-2">
-          {auth.admin ? (
-            <div className="flex gap-2">
-              <button
-                // onClick={() => handleAgregarActividad()}
-                className="py-2 px-3 bg-green-600 hover:bg-green-500 text-white hover:text-black rounded-xl"
-              >
-                Nueva Actividad
-              </button>
-              <button className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl">
-                Descargar Excel
-              </button>
-              <Link
-                to={`/user/usuarios/gestion/req`}
-                className="py-2 px-3 bg-blue-500 hover:bg-blue-400 text-white hover:text-black rounded-xl"
-              >
-                Requerimiento
-              </Link>
-            </div>
-          ) : (
-            <div className="flex gap-2">
-              {" "}
-              <Link
-                to={`/user/usuarios/gestion/req`}
-                className="py-2 px-3 bg-blue-500 hover:bg-blue-400 text-white hover:text-black rounded-xl"
-              >
-                Requerimiento
-              </Link>
-              <button className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl">
-                Descargar Excel
-              </button>{" "}
-            </div>
-          )}
-        </div>
       </div>
+
       <div className="w-full mt-2">
         <table className="w-full ">
           <thead className="">
@@ -657,8 +683,10 @@ const Recursos = () => {
                       </div>
                       <div className="w-6/12">
                         <p className={btnOn.class}>
-                          {btnOn.msg} -{" "}
-                          <span className="text-white">Cantidad de items </span>
+                          {btnOn.msg}{" "}
+                          <span className="text-blue-300">
+                            Cantidad de items{" "}
+                          </span>
                           <span className="text-red-400 font-bold text-xl">
                             {requerimientoList.length}
                           </span>{" "}

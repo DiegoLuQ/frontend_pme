@@ -53,13 +53,18 @@ const Requerimiento = () => {
     setRequerimientoAccion(accionPME);
   }, []);
 
-  const handleVisualizarRequerimiento = () => {
+  const handleVisualizarRequerimiento = async () => {
     // const dataTest = requerimientoColegio.codigo_req = generarId(img_dpmc)
 
     if (Object.keys(requerimientoColegio).length > 0) {
-      const newCodigo_req = generarId(img_dpmc);
-      requerimientoColegio.requerimientos = requerimientoList
-      console.log(requerimientoColegio)
+      const newCodigo_req = await generarId(img_dpmc);
+      requerimientoColegio.requerimientos = requerimientoList;
+      requerimientoColegio.codigo_req = newCodigo_req;
+      requerimientoColegio.fecha = fecha;
+      requerimientoColegio.hora = hora;
+      requerimientoColegio.info.req_para = document.getElementsByName("req_para")[0].value
+      requerimientoColegio.info.req_tipo = document.getElementsByName("req_tipo")[0].value
+
       navigate(`/user/usuarios/gestion/req/${newCodigo_req}`);
       return;
     }
@@ -84,7 +89,7 @@ const Requerimiento = () => {
     const nombre_colegio = colegioInfo.data.nombre;
     const id_pme = colegioInfo.pme._id;
     addRequerimientoColegio({
-      codigo_req: generarId(img_dpmc),
+      codigo_req: value_id,
       usuario,
       area,
       cargo,
@@ -103,7 +108,6 @@ const Requerimiento = () => {
       ...datosParaRequerimiento,
       [e.target.name]: e.target.value,
     });
-
   };
 
   useEffect(() => {
@@ -145,7 +149,7 @@ const Requerimiento = () => {
   };
 
   const addRequerimiento = (requerimiento) => {
-    console.log(requerimiento)
+    console.log(requerimiento);
     setRequerimientoList([...requerimientoList, requerimiento]);
   };
 
@@ -181,13 +185,14 @@ const Requerimiento = () => {
 
   const handleBuscarReq = async (codigo_req) => {
     const { data } = await getRequerimiento(codigo_req);
+    // data.codigo_req = generarId(img_dpmc)
+    console.log(data);
     if (data) {
       {
         if (data.requerimientos.length > 0) {
           setRequerimientoList(data.requerimientos);
-          document.getElementsByName("req_para")[0].value = data.info.req_para
-          document.getElementsByName("req_tipo")[0].value = data.info.req_tipo
-          
+          document.getElementsByName("req_para")[0].value = data.info.req_para;
+          document.getElementsByName("req_tipo")[0].value = data.info.req_tipo;
         }
       }
     }
@@ -202,17 +207,16 @@ const Requerimiento = () => {
   };
   const handleNuevoRequerimiento = () => {
     document.getElementsByName("value_id")[0].value = generarId(img_dpmc);
-    addRequerimientoColegio({})
-    setRequerimientoList([])
+    addRequerimientoColegio({});
+    setRequerimientoList([]);
     setValue_id(document.getElementsByName("value_id")[0].value);
     document.getElementsByName("req_accion")[0].value = "";
-    document.getElementsByName("req_dimension")[0].value =""
-    document.getElementsByName("req_subdimension")[0].value =""
-    document.getElementsByName("req_actividad")[0].value =""
-    document.getElementsByName("req_para")[0].value = ""
-    document.getElementsByName("req_tipo")[0].value = ""
-    
-  }
+    document.getElementsByName("req_dimension")[0].value = "";
+    document.getElementsByName("req_subdimension")[0].value = "";
+    document.getElementsByName("req_actividad")[0].value = "";
+    document.getElementsByName("req_para")[0].value = "";
+    document.getElementsByName("req_tipo")[0].value = "";
+  };
   return (
     <div className="mt-4 border rounded-lg w-[1440px] m-auto">
       <div className="w-12/12 md:w-8/12 m-auto">
@@ -348,10 +352,10 @@ const Requerimiento = () => {
                 disabled={true}
               />
             </div>
-            <div className="flex justify-end my-4">
+            <div className="flex justify-end my-4 gap-2">
               <Link
                 to={urlActividad}
-                className="bg-sky-200 px-2 py-1 rounded-xl"
+                className="bg-sky-200 hover:bg-sky-300 px-2 py-1 rounded-xl"
               >
                 Buscar Actividad
               </Link>
