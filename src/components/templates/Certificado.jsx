@@ -80,7 +80,7 @@ function Certificado() {
               />
             </div>
             <div className="">
-              <p>Colegio {params.colegio}</p>
+              <p>Fundación Educacional {params.colegio}</p>
               <p>
                 {director.direccion} FONO:{director.telefono}
               </p>
