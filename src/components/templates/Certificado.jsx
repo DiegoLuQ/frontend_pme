@@ -174,7 +174,7 @@ function Certificado() {
           </div>
           <div className="flex justify-between my-6 px-[60px] text-2xl">
             <p>Alto Hospicio</p>
-            <p>V°B° Contador Jefe</p>
+            <p>Firma Responsable</p>
           </div>
           <hr className="my-2" />
           <hr />

@@ -7,15 +7,21 @@ import { AuthProvider } from "./context/AuthProvider";
 import { AddItemProvider } from "./context/ReqProvider";
 import { ColegioProvider } from "./context/ColegioProvider";
 import { ReqGestionProvider } from "./context/ReqGestionProvider";
+import { AccionesProvider } from "./context/AccionesProvider";
+import { ActividadProvider } from "./context/ActividadProvider";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <AuthProvider>
     <ColegioProvider>
-      <AddItemProvider>
-        <ReqGestionProvider>
-          <RouterProvider router={router} />
-        </ReqGestionProvider>
-      </AddItemProvider>
+      <AccionesProvider>
+        <ActividadProvider>
+          <AddItemProvider>
+            <ReqGestionProvider>
+              <RouterProvider router={router} />
+            </ReqGestionProvider>
+          </AddItemProvider>
+        </ActividadProvider>
+      </AccionesProvider>
     </ColegioProvider>
   </AuthProvider>
 );

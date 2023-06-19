@@ -14,25 +14,25 @@ const AccionPDF = ({ accion }) => {
   }, [])
   return (
     <div className="col-span-4 h-min-[150px] border rounded-lg">
-      <div className="grid p-2">
+      <div className="grid">
         <div>
-          <div className="grid grid-cols-12 gap-2">
+          <div className="grid grid-cols-12">
             <label className="col-span-4 p-1 text-left text-sm">Acción</label>
             <p className="col-span-8 pl-2 text-sm">{accion ? accion.accion : "" }</p>
           </div>
-          <div className="grid grid-cols-12 gap-2">
+          <div className="grid grid-cols-12">
             <label className="col-span-4 p-1 text-left text-sm">
               Dimensión
             </label>
             <p className="col-span-8 pl-2 text-sm">{accion ? accion.dimension : ""}</p>
           </div>
-          <div className="grid grid-cols-12 gap-2">
+          <div className="grid grid-cols-12">
             <label className="col-span-4 p-1 text-left text-sm">
               SubDimensión
             </label>
             <p className="col-span-8 pl-2 text-sm">{accion ? accion.subdimension : ""}</p>
           </div>
-          <div className="grid grid-cols-12 gap-2">
+          <div className="grid grid-cols-12">
             <label className="col-span-4 p-1 text-left text-sm">
               Actividad
             </label>

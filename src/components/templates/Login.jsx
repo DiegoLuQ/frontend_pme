@@ -75,6 +75,7 @@ const Login = () => {
               Contraseña
             </label>
             <input
+            autoComplete="off"
               type="password"
               className="mt-2 px-3 py-2 border rounded-xl w-full"
               placeholder="Contraseña"

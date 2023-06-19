@@ -7,6 +7,7 @@ import useAddReq from "../../hooks/useAddReq";
 import AddItemContext from "../../context/ReqProvider";
 import ColegioContext from "../../context/ColegioProvider";
 import { postBusquedaRequest } from "../../api/Api_busqueda";
+import AccionesContext from "../../context/AccionesProvider";
 
 const Recursos = () => {
   const params = useParams();
@@ -25,6 +26,7 @@ const Recursos = () => {
   const { setRequerimientoList, requerimientoList, addActividad } =
     useContext(AddItemContext);
   const { colegioInfo } = useContext(ColegioContext);
+  const {getAcciones, acciones} = useContext(AccionesContext)
   const [cantidadReq, setCantidadReq] = useState();
   const handleInputChangeCantidad = (e) => {
     setCantidadReq(e.target.value);
@@ -64,9 +66,14 @@ const Recursos = () => {
 
   const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
   useEffect(() => {
+    const storedData = localStorage.getItem('colegioInfo')
+    const parseData = JSON.parse(storedData)
+    const res = async () => await getAcciones(parseData.pme._id)
+    
     if (data) {
       setRecursos(data);
     }
+    res()
   }, [data]);
 
   const handleFilterRecurso = (e) => {
@@ -261,13 +268,16 @@ const Recursos = () => {
           <div className="flex justify-between w-full">
             <div className="flex gap-2">
               <button
-                // onClick={() => handleAgregarActividad()}
+                onClick={() => handleAgregarActividad()}
                 className="py-2 px-3 bg-green-600 hover:bg-green-500 text-white hover:text-black rounded-xl"
               >
                 Nueva Actividad
               </button>
               <button className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl">
                 Descargar Excel
+              </button>
+              <button className="py-2 px-3 bg-sky-500 hover:bg-sky-400 text-white hover:text-black rounded-xl">
+                Busquedas de usuarios
               </button>
             </div>
             <div className="flex gap-2">
@@ -492,7 +502,7 @@ const Recursos = () => {
                         {RecursosData.recursos_actividad.map((item, index) => (
                           <ol
                             key={index}
-                            className="relative flex items-center  justify-center text-white p-3 text-center rounded-lg ring-1 ring-pink-500"
+                            className="relative text-xs flex items-center  justify-center text-white p-3 text-center rounded-lg ring-1 ring-pink-500"
                           >
                             <button
                               type="button"

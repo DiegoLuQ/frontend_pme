@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import AuthContext from "../../context/AuthProvider";
 import ColegioContext from "../../context/ColegioProvider";
 const Pme = ({ colegio, id, colegioDataApi }) => {
+
   const { addColegio, colegioInfo } = useContext(ColegioContext);
   const { auth } = useContext(AuthContext);
   const { data, error, loading } = useFetch(`pme/pme_colegio/${id}`);
   if (loading) return <h1>Loading</h1>;
-
   const handleClickColegioInfo = (data, pme) => {
     if (data) {
       const newData = {

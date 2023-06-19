@@ -2,8 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import AccionesUpdate from "../organismos/AccionesUpdate";
 import Pme from "./Pme";
-import { Link } from "react-router-dom";
-import ColegioContext from "../../context/ColegioProvider";
 
 function Colegios() {
   const [colegio, setColegio] = useState([]);
@@ -14,6 +12,7 @@ function Colegios() {
       setColegio(data);
     }
   }, [data]);
+  
   if (loading) return <h1>loading</h1>;
   return (
     <>

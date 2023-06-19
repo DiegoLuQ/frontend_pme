@@ -7,8 +7,8 @@ const MainPDF = ({ datosPDF }) => {
 
   return (
     <div className="col-span-3 h-min-[150px] border rounded-lg">
-      <div className="gap-3 col-span-2 p-2">
-        <div className="flex flex-col gap-1 justify-center">
+      <div className="gap-3 col-span-2">
+        <div className="flex flex-col justify-center">
           <div className="grid grid-cols-5 p-1  h-auto">
             <label className="col-span-2 text-left text-sm">De</label>
             <p className="col-span-3 text-sm">{datosPDF && datosPDF.usuario}</p>

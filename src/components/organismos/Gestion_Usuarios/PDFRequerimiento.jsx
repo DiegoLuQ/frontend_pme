@@ -4,12 +4,17 @@ import { HeaderPDF } from "../../moleculas/pdfRequerimiento/HeaderPDF";
 import MainPDF from "../../moleculas/pdfRequerimiento/MainPDF";
 import AccionPDF from "../../moleculas/pdfRequerimiento/AccionPDF";
 import ListaRecursos from "../../moleculas/pdfRequerimiento/ListaRecursos";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { jsPDF } from "jspdf";
+import ColegioContext from "../../../context/ColegioProvider";
 
 const PDFRequerimiento = () => {
   const params = useParams();
-  const { requerimientoColegio, postRequerimiento } = useContext(ReqGestionContext);
+  const {colegioInfo} = useContext(ColegioContext)
+  console.log(colegioInfo)
+  const navigate = useNavigate()
+  const { requerimientoColegio, postRequerimiento } =
+    useContext(ReqGestionContext);
   const doc = new jsPDF("p", "pt", "letter", "UTF8");
   const handleClick = () => {
     doc.html(document.getElementById("paraPDF"), {
@@ -26,9 +31,9 @@ const PDFRequerimiento = () => {
         pdf.save("Req -" + requerimientoColegio.codigo_req + ".pdf");
       },
     });
-    requerimientoColegio.codigo_req = params.codigo_req
+    requerimientoColegio.codigo_req = params.codigo_req;
     postRequerimiento(requerimientoColegio);
-    navigate('/user/usuarios/gestion/req')
+    navigate("/user/usuarios/gestion/req");
   };
 
   return (
@@ -37,17 +42,17 @@ const PDFRequerimiento = () => {
         id="paraPDF"
         className="grid grid-col-10 max-w-[900px] m-auto mt-4 mb-4 gap-2 rounded-xl p-2 "
       >
-        <p className="my-4 text-base text-center md:text-1xl font-semibold">
-          Solicitud de requerimientos operativos reparación-mantención de
-          infraestructura y/o compra de activos del{" "}
-          {requerimientoColegio.nombre_colegio}
-        </p>
         <div>
           <HeaderPDF
             nombre_colegio={requerimientoColegio.nombre_colegio}
             value_id={params.codigo_req}
           />
         </div>
+        <p className="my-4 text-base text-center md:text-1xl font-semibold">
+          Solicitud de requerimientos operativos reparación-mantención de
+          infraestructura y/o compra de activos del{" "}
+          {requerimientoColegio.nombre_colegio}
+        </p>
         {/* Datos del requerimiento */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center my-1">
@@ -58,7 +63,7 @@ const PDFRequerimiento = () => {
               <label className="">{requerimientoColegio.fecha}</label>
             </div>
           </div>
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1">
             <MainPDF datosPDF={requerimientoColegio} />
             <AccionPDF accion={requerimientoColegio.accion} />
           </div>
@@ -72,16 +77,21 @@ const PDFRequerimiento = () => {
                 : []
             }
           />
-          <div className="flex flex-col mt-10 items-end">
+          <div className="flex flex-col mt-10 items-center">
             <div className="w-[250px] border-t-2"></div>
             <p className="">Firma jefatura correspondiente</p>
+            <hr className="border" />
+            <div className="flex flex-col justify-center">
+              <p className="text-center">Gerencia de Operaciones</p>
+              <p className="italic text-center">Educar para una vida mejor</p>
+              <p className="text-center">{colegioInfo.data.direccion}, Alto Hospicio, Fono {colegioInfo.data.telefono}</p>
+            </div>
           </div>
         </div>
       </div>
       <div className="flex justify-center">
         <button
           onClick={handleClick}
-          
           className="bg-green-300 hover:bg-green-400 px-3 py-2 rounded-lg text-md text-black text-2xl"
         >
           Crear Requerimiento
