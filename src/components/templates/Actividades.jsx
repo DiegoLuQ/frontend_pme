@@ -12,9 +12,9 @@ const Actividades = () => {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const { data, error, loading } = useFetch(
-    `accion/actividades/?uuid_accion=${params.uuid_accion}` //agregar id_pme para filtrar
+    `accion/actividades/?uuid_accion=${params.uuid_accion}&id_pme=${params.id}` //agregar id_pme para filtrar
   );
-  console.log(data);
+  console.log(params);
   useEffect(() => {
     if (data) {
       setActividades(data[0].actividades);
@@ -25,7 +25,12 @@ const Actividades = () => {
 
   const handleCertificadoClick = (data) => {
     navigate(
-      `/user/colegios/${params.colegio}/certificado/${params.year}/${params.id}/${params.uuid_accion}/${dataAccion.subdimensiones}`
+      `/user/colegios/${params.colegio}/certificado/${params.year}/${params.id}/${params.uuid_accion}/${dataAccion.subdimensiones}`,
+      {
+        state: {
+          actividad: data,
+        },
+      }
     );
   };
 

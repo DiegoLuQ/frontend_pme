@@ -9,7 +9,7 @@ function Certificado() {
   const location = useLocation();
   const datito = location.state.actividad
   const [actividadPME, setActividadPME] = useState(datito);
-
+  console.log(location)
   const params = useParams();
   if (!params) {
     return;

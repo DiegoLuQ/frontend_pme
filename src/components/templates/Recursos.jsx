@@ -13,6 +13,7 @@ import ActividadContext from "../../context/ActividadProvider";
 const Recursos = () => {
   const params = useParams();
   const navigate = useNavigate();
+  console.log(params)
   const [recursos, setRecursos] = useState([]); // Array de actividades y sus recursos
   const [RecursosData, setRecursosData] = useState(); // Lista de los recursos de la actividad
   const [newRecurso, setNewRecurso] = useState(""); // Agregando nuevo recurso
@@ -276,9 +277,7 @@ const Recursos = () => {
                 Nueva Actividad
               </button>
               <a
-                href={`${import.meta.env.VITE_API}/recursos/descargar/pme/${
-                  params.id
-                }`}
+                href={`${import.meta.env.VITE_API}/recursos/descargar/pme/${params.id}`}
                 className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl"
               >
                 Descargar Excel Actividades
