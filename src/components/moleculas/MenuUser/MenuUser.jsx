@@ -14,25 +14,25 @@ const MenuUser = () => {
       <div className="flex-col flex md:flex-row flex-wrap justify-center gap-3">
         <Link
           to={`/user/usuarios/gestion/req`}
-          className="flex items-center justify-center md:w-[14%] bg-blue-600 text-center hover:bg-blue-800 text-white font-bold text-lg"
+          className="flex items-center justify-center md:w-[14%] bg-blue-600 text-center hover:bg-blue-800 text-white font-bold text-base"
         >
           Requerimientos
         </Link>
         <Link
           to={`/user/usuarios/gestion/mis_requerimientos/${auth.area}`}
-          className="flex items-center justify-center md:w-[14%] bg-teal-600 text-center hover:bg-teal-800 text-white font-bold text-lg"
+          className="flex items-center justify-center md:w-[14%] bg-teal-600 text-center hover:bg-teal-800 text-white font-bold text-base"
         >
-          Mis Requerimientos
+          Requerimientos de Área
         </Link>
         {/* <Link
           to={`/user/usuarios/gestion/${params.nombre_colegio}/${params.id_colegio}/presupuesto`}
-          className="flex items-center justify-center md:w-[14%] bg-teal-600 text-center hover:bg-teal-800 text-white font-bold text-lg"
+          className="flex items-center justify-center md:w-[14%] bg-teal-600 text-center hover:bg-teal-800 text-white font-bold text-base"
         >
           Presupuesto
         </Link> */}
         <Link
           to="/"
-          className="flex items-center justify-center md:w-[14%] bg-teal-600 text-center hover:bg-teal-800 text-white font-bold text-lg"
+          className="flex items-center justify-center md:w-[14%] bg-teal-600 text-center hover:bg-teal-800 text-white font-bold text-base"
         >
           Inicio
         </Link>

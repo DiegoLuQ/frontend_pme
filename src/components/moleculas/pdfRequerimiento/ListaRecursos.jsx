@@ -2,7 +2,7 @@ import React from "react";
 
 const ListaRecursos = ({ requerimiento }) => {
   return (
-    <div className="overflow-auto">
+    <div className="overflow-auto my-4">
       <table className="table w-[100%] border">
         <thead className="">
           <tr className="text-xs">

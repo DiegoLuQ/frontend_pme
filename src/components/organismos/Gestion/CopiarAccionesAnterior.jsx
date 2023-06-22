@@ -20,7 +20,9 @@ const CopiarAccionesAnterior = ({ data_id, id_new_pme, year_new_pme }) => {
   if (error) return <h1>Error</h1>;
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(e.target.id_pme.value);
+    console.log(e.target.id_pme.value);
+    console.log(e.target.new_id_pme.value);
     if (e.target.new_id_pme.value === e.target.id_pme.value) {
       setMostrarMensaje(true);
       setAlert("Los PME no deben ser iguales");
@@ -33,11 +35,10 @@ const CopiarAccionesAnterior = ({ data_id, id_new_pme, year_new_pme }) => {
     setAlert("");
     axios
       .post(
-        `${import.meta.env.VITE_API}/accion/copiar/acciones/${
-          e.target.id_pme.value
-        }/${e.target.new_id_pme.value}`
+        `${import.meta.env.VITE_API}/accion/copiar/acciones/${e.target.id_pme.value}/${e.target.new_id_pme.value}`
       )
       .then((resp) => {
+        console.log(resp)
         setMostrarMensaje(true);
         setAlert("se copio correctamente las acciones al nuevo PME");
         setTimeout(() => {
@@ -45,14 +46,13 @@ const CopiarAccionesAnterior = ({ data_id, id_new_pme, year_new_pme }) => {
         }, 3000);
       })
       .catch((err) => {
-        console.log(err.response)
-        if(err.response && err.response.status == 400){
+        console.log(err.response);
+        if (err.response && err.response.status == 400) {
           setAlert(err.response.data.msg);
-          setMostrarMensaje(true); 
+          setMostrarMensaje(true);
           setTimeout(() => {
             setMostrarMensaje(false);
           }, 3000);
-
         }
       });
   };

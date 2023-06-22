@@ -21,7 +21,11 @@ const MisRequerimientos = () => {
   }, []);
   const handleImprimir = (data, value_id) => {
     navigate(
-      `/user/usuarios/gestion/req/${value_id}`
+      `/user/usuarios/gestion/req/${value_id}`, {
+        state: {
+          imprimir:true
+        }
+      }
     );
     addRequerimientoColegio(data);
   };
@@ -34,9 +38,11 @@ const MisRequerimientos = () => {
             <th className="text-sm text-start px-2 w-1/12">Fecha</th>
             <th className="text-sm text-start px-2 w-1/12">Usuario</th>
             <th className="text-sm text-start px-2 w-3/12">Acción</th>
-            <th className="text-sm text-start px-2 w-3/12">Actividad</th>
-            <th className="text-sm text-start px-2 w-2/12">Recursos</th>
-            <th className="text-sm text-start px-2 w-2/12">Enlace</th>
+            <th className="text-sm text-start px-2 w-2/12">Actividad</th>
+            <th className="text-sm text-start px-2 w-1/12">N° Req</th>
+            
+            {/* <th className="text-sm text-start px-2 w-4/12">Recursos</th> */}
+            <th className="text-sm text-center px-2 w-2/12">Enlace</th>
           </tr>
         </thead>
         <tbody>
@@ -47,22 +53,24 @@ const MisRequerimientos = () => {
               <td className="p-2">{item.usuario}</td>
               <td className="p-2">{item.accion.accion}</td>
               <td className="p-2">{item.accion.actividad}</td>
-              <td className="text-center p-2">
-                <div className="grid grid-cols-5 gap-1">
+              <td className="p-2">{item.info.req_numero}</td>
+              
+              {/* <td className="text-center p-2">
+                <div className="grid grid-cols-5 gap-4">
                   {item.requerimientos.map((recurso, i) => (
                     <div className="" key={i}>
                       {recurso.recurso}
                     </div>
                   ))}
                 </div>
-              </td>
+              </td> */}
               <td className="p-2">
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-center">
                   <button
                     onClick={() => handleImprimir(item, item.codigo_req)}
                     className="px-2 py-1 rounded-lg drop-shadow-xl bg-red-200 hover:bg-red-300"
                   >
-                    Imprimir
+                    Visualizar
                   </button>
                 </div>
               </td>

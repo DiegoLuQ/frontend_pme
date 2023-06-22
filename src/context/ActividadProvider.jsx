@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { postActividadRequest } from "../api/Api_actividad";
+import { postActividadRequest, getActividadesExcelRequest } from "../api/Api_actividad";
 
 const ActividadContext = createContext();
 
@@ -16,8 +16,13 @@ const ActividadProvider = ({ children }) => {
     }
   };
 
+  const getActividadesExcel = async (id_pme) => {
+    const res = await getActividadesExcelRequest(id_pme)
+    return res
+  }
+
   return (
-    <ActividadContext.Provider value={{ postActividad }}>
+    <ActividadContext.Provider value={{ postActividad, getActividadesExcel }}>
       {children}
     </ActividadContext.Provider>
   );

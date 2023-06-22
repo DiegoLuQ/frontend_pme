@@ -8,6 +8,7 @@ import AddItemContext from "../../context/ReqProvider";
 import ColegioContext from "../../context/ColegioProvider";
 import { postBusquedaRequest } from "../../api/Api_busqueda";
 import AccionesContext from "../../context/AccionesProvider";
+import ActividadContext from "../../context/ActividadProvider";
 
 const Recursos = () => {
   const params = useParams();
@@ -15,7 +16,7 @@ const Recursos = () => {
   const [recursos, setRecursos] = useState([]); // Array de actividades y sus recursos
   const [RecursosData, setRecursosData] = useState(); // Lista de los recursos de la actividad
   const [newRecurso, setNewRecurso] = useState(""); // Agregando nuevo recurso
-  const { data, error, loading } = useFetch(`recursos/${params.id}`); // la data
+  const { data, error, loading } = useFetch(`recursos/${params.id}`); // la data id_pme
   const [modal, setModalVisible] = useState(false); // cuando abrimos y cerramos el modal
   const [recursoReq, setRecursoReq] = useState("");
   const [modalDetalle, setModalDetalle] = useState(false);
@@ -26,7 +27,8 @@ const Recursos = () => {
   const { setRequerimientoList, requerimientoList, addActividad } =
     useContext(AddItemContext);
   const { colegioInfo } = useContext(ColegioContext);
-  const {getAcciones, acciones} = useContext(AccionesContext)
+  const { getAcciones, acciones } = useContext(AccionesContext);
+  const { getActividadesExcel } = useContext(ActividadContext);
   const [cantidadReq, setCantidadReq] = useState();
   const handleInputChangeCantidad = (e) => {
     setCantidadReq(e.target.value);
@@ -66,14 +68,14 @@ const Recursos = () => {
 
   const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
   useEffect(() => {
-    const storedData = localStorage.getItem('colegioInfo')
-    const parseData = JSON.parse(storedData)
-    const res = async () => await getAcciones(parseData.pme._id)
-    
+    const storedData = localStorage.getItem("colegioInfo");
+    const parseData = JSON.parse(storedData);
+    const res = async () => await getAcciones(parseData.pme._id);
+
     if (data) {
       setRecursos(data);
     }
-    res()
+    res();
   }, [data]);
 
   const handleFilterRecurso = (e) => {
@@ -273,9 +275,14 @@ const Recursos = () => {
               >
                 Nueva Actividad
               </button>
-              <button className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl">
-                Descargar Excel
-              </button>
+              <a
+                href={`${import.meta.env.VITE_API}/recursos/descargar/pme/${
+                  params.id
+                }`}
+                className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl"
+              >
+                Descargar Excel Actividades
+              </a>
               <button className="py-2 px-3 bg-sky-500 hover:bg-sky-400 text-white hover:text-black rounded-xl">
                 Busquedas de usuarios
               </button>
@@ -298,21 +305,26 @@ const Recursos = () => {
         ) : (
           <div className="flex gap-2 justify-end">
             {" "}
-            <Link
-              to={`/user/usuarios/gestion/req`}
-              className="py-2 px-3 bg-blue-500 hover:bg-blue-400 text-white hover:text-black rounded-xl"
+            <a
+              href={`${import.meta.env.VITE_API}/recursos/descargar/pme/${
+                params.id
+              }`}
+              className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl"
             >
-              Ir Requerimiento
-            </Link>
-            <button className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl">
-              Descargar Excel
-            </button>{" "}
+              Descargar Excel Recursos
+            </a>
             <button
               onClick={() => handleReqSinActividad()}
               className="py-2 px-3 bg-gray-500 hover:bg-gray-400 text-white hover:text-black rounded-xl"
             >
               Requerimiento sin actividad
             </button>
+            <Link
+              to={`/user/usuarios/gestion/req`}
+              className="py-2 px-3 bg-blue-500 hover:bg-blue-400 text-white hover:text-black rounded-xl"
+            >
+              Ir Requerimiento
+            </Link>
           </div>
         )}
       </div>
@@ -438,7 +450,7 @@ const Recursos = () => {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+                  className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
                 >
                   <svg
                     aria-hidden="true"
@@ -557,7 +569,7 @@ const Recursos = () => {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+                  className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
                 >
                   <svg
                     aria-hidden="true"
@@ -740,7 +752,7 @@ const Recursos = () => {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+                  className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
                 >
                   <svg
                     aria-hidden="true"

@@ -138,11 +138,11 @@ const RegistrarActividad = () => {
             <div className="space-y-6">
               <div>
                 <label className="block mb-2 text-sm font-medium text-white">
-                  Actividad
+                  Actividad2
                 </label>
                 <input
                   name="nombre_actividad"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                   placeholder="actividad"
                   onChange={handleInputChangeNuevaActividad}
                   required
@@ -160,7 +160,7 @@ const RegistrarActividad = () => {
                         name="newrecurso"
                         placeholder="Nuevo Recurso"
                         onChange={handleInputChangeNewRecurso}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                       />
                       <button
                         onClick={() => handleStringToList()}
@@ -251,7 +251,7 @@ const RegistrarActividad = () => {
               <textarea
                 name="descripcion_actividad"
                 rows={3}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                 placeholder="descripción"
                 onChange={handleInputChangeNuevaActividad}
                 required
@@ -263,7 +263,7 @@ const RegistrarActividad = () => {
               </label>
               <input
                 name="medios_ver"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                 placeholder="Medios de verificación"
                 onChange={handleInputChangeNuevaActividad}
                 required
@@ -278,7 +278,7 @@ const RegistrarActividad = () => {
                   name="dimension"
                   onChange={handleInputChangeNuevaActividad}
                   defaultValue={dimension}
-                  className="bg-gray-50 w-full border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50 w-full border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 "
                   placeholder="dimensión"
                   required
                 />
@@ -311,7 +311,7 @@ const RegistrarActividad = () => {
                 </label>
                 <input
                   name="monto"
-                  className="bg-gray-50 w-full border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50 w-full border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 "
                   placeholder="Monto Aprox"
                   onChange={handleInputChangeNuevaActividad}
                   required
@@ -324,7 +324,7 @@ const RegistrarActividad = () => {
                 </label>
                 <input
                   name="responsable"
-                  className="bg-gray-50 w-full border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                  className="bg-gray-50 w-full border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 "
                   placeholder="Responsable"
                   onChange={handleInputChangeNuevaActividad}
                   required

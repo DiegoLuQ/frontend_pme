@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
-import axios from "axios";
 import AuthContext from "../../context/AuthProvider";
 
 const Macaya = () => {
@@ -51,9 +50,9 @@ const Macaya = () => {
         >
           Buscar Actividades o Recursos
         </Link> */}
-        <Link className="flex gap-2 justify-center font-semibold duration-300 ease-in-out bg-green-800 hover:bg-green-700 hover:rounded-lg text-gray-200 rounded-lg px-2 md:w-[20%]">
+        <a href={`${import.meta.env.VITE_API}/accion/descargar/pme/user/${params.id}`} className="flex gap-2 justify-center font-semibold duration-300 ease-in-out bg-green-800 hover:bg-green-700 hover:rounded-lg text-gray-200 rounded-lg px-2 md:w-[20%]">
           Descargar PME Excel
-        </Link>
+        </a>
       </div>
       <div className="border rounded-xl p-3 ring-1 mt-3">
         <input

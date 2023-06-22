@@ -14,12 +14,13 @@ function Certificado() {
   if (!params) {
     return;
   }
+  console.log(params)
   const arraySubdimension = params.subdimension.split(",");
   const [dataAccion, setDataAccion] = useState([]);
   const [director, setDirector] = useState([]);
   const [load, setLoad] = useState(true);
   const { data, error, loading } = useFetch(
-    `accion/actividades/?uuid_accion=${params.uuid_accion}`
+    `accion/actividades/?uuid_accion=${params.uuid_accion}&id_pme=${params.id}`
   );
   useEffect(() => {
     if (data) {
@@ -168,7 +169,7 @@ function Certificado() {
               <div>
                 <p className="font-bold">{director.director}</p>
                 <p>Director</p>
-                <p className="italic">Fundacion educacional Puerto Nuevo</p>
+                <p className="italic">Fundacion educacional {params.colegio}</p>
               </div>
             </div>
           </div>
@@ -182,7 +183,7 @@ function Certificado() {
             <div className="flex gap-5">
               <div className="">
                 <p className="text-lg italic font-bold text-center">
-                  Fundacion educacional Puerto Nuevo
+                  Fundacion educacional {params.colegio}
                 </p>
                 <p className="text-lg font-bold text-center">
                   {director.direccion} - Fono: {director.telefono}

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import AccionesUpdate from "../organismos/AccionesUpdate";
 import Pme from "./Pme";
+import { Link } from "react-router-dom";
 
 function Colegios() {
   const [colegio, setColegio] = useState([]);
@@ -12,7 +13,7 @@ function Colegios() {
       setColegio(data);
     }
   }, [data]);
-  
+
   if (loading) return <h1>loading</h1>;
   return (
     <>
@@ -48,13 +49,15 @@ function Colegios() {
               <p className="flex gap-3 items-center">
                 <span className="font-bold">Telefono:</span> {item.telefono}
               </p>
+              <div>
               <Pme id={item._id} colegio={item.nombre} colegioDataApi={item} />
+
+              </div>
               {/* <Presupuesto id_colegio={item._id}  colegio={item.nombre} /> */}
-              <div></div>
             </div>
             {/* <div className="flex flex-row items-center md:flex md:flex-row md:justify-center mb-4">
               <Link
-                to={`/gestion/${item.nombre}/${item._id}`}
+                to={`/user/gestion/${item.nombre}/${item._id}`}
                 className={
                   item.nombre == "Macaya"
                     ? "text-green-600 font-bold text-base md:text-lg md:px-2 mx-2 py-1 bg-gray-800 mt-2 w-[100%] md:w-[70%] hover:bg-gray-700 cursor-pointer rounded-lg"
@@ -68,12 +71,12 @@ function Colegios() {
         ))}
       </div>
       <hr />
-      <div className="">
+      {/* <div className="">
         <h1 className="my-3 text-center">Ultimas Acciones modificadas</h1>
         <div>
           <AccionesUpdate />
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

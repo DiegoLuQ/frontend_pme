@@ -40,6 +40,7 @@ const Requerimiento = () => {
   const [urlActividad, setUrlActividad] = useState("");
   const [requerimientoAccion, setRequerimientoAccion] = useState({});
   const [recurso, setRecurso] = useState({});
+  const [numeroArea, setNumeroArea] = useState("");
 
   const [datosParaRequerimiento, setDatosParaRequerimiento] = useState({});
   window.addEventListener("beforeunload", () => {
@@ -62,10 +63,17 @@ const Requerimiento = () => {
       requerimientoColegio.codigo_req = newCodigo_req;
       requerimientoColegio.fecha = fecha;
       requerimientoColegio.hora = hora;
-      requerimientoColegio.info.req_para = document.getElementsByName("req_para")[0].value
-      requerimientoColegio.info.req_tipo = document.getElementsByName("req_tipo")[0].value
+      requerimientoColegio.info.req_para =
+        document.getElementsByName("req_para")[0].value;
+      requerimientoColegio.info.req_tipo =
+        document.getElementsByName("req_tipo")[0].value;
+      requerimientoColegio.info.req_numero = numeroArea;
 
-      navigate(`/user/usuarios/gestion/req/${newCodigo_req}`);
+      navigate(`/user/usuarios/gestion/req/${newCodigo_req}`, {
+        state: {
+          imprimir: false,
+        },
+      });
       return;
     }
 
@@ -82,7 +90,12 @@ const Requerimiento = () => {
     navigate(
       `/user/usuarios/gestion/req/${
         document.getElementsByName("value_id")[0].value
-      }`
+      }`,
+      {
+        state: {
+          imprimir: false,
+        },
+      }
     );
 
     const { area, cargo, usuario } = auth;
@@ -98,8 +111,8 @@ const Requerimiento = () => {
       fecha,
       hora,
       accion: requerimientoAccion,
-      requerimientos: requerimientoList, //arrelgar - se demora en guardar
-      info: datosParaRequerimiento,
+      requerimientos: requerimientoList,
+      info: { ...datosParaRequerimiento, req_numero: numeroArea },
     });
   };
 
@@ -108,6 +121,7 @@ const Requerimiento = () => {
       ...datosParaRequerimiento,
       [e.target.name]: e.target.value,
     });
+    console.log(datosParaRequerimiento);
   };
 
   useEffect(() => {
@@ -193,6 +207,8 @@ const Requerimiento = () => {
           setRequerimientoList(data.requerimientos);
           document.getElementsByName("req_para")[0].value = data.info.req_para;
           document.getElementsByName("req_tipo")[0].value = data.info.req_tipo;
+          document.getElementsByName("req_numero")[0].value =
+            data.info.req_numero;
         }
       }
     }
@@ -216,6 +232,7 @@ const Requerimiento = () => {
     document.getElementsByName("req_actividad")[0].value = "";
     document.getElementsByName("req_para")[0].value = "";
     document.getElementsByName("req_tipo")[0].value = "";
+    document.getElementsByName("req_numero")[0].value = "";
   };
   return (
     <div className="mt-4 border rounded-lg w-[1440px] m-auto">
@@ -259,7 +276,7 @@ const Requerimiento = () => {
           SOLICITUD DE REQUERIMIENTOS OPERATIVOS (REPARACION-MANTENCION DE
           INFRAESTRUCTURA Y/O COMPRA DE ACTIVOS)
         </h1>
-        <form className="border p-2">
+        <div className="border p-2">
           <div className="grid grid-cols-12 gap-2 mt-2">
             <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
               De
@@ -397,7 +414,18 @@ const Requerimiento = () => {
               <option value="Compra y Logistica">Compra y Logística</option>
             </select>
           </div>
-        </form>
+          <div className="grid grid-cols-12 gap-2 mt-2">
+            <label className="p-2 md:w-12/12 text-left col-span-4 hidden md:block">
+              N° Req. según área
+            </label>
+            <input
+              type="text"
+              className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 bg-yellow-100 hover:ring-inset ring-1 ring-blue-300"
+              name="req_numero"
+              onChange={(e) => setNumeroArea(e.target.value)}
+            />
+          </div>
+        </div>
         <br />
         <hr />
         <form onSubmit={handleRequerimiento}>
@@ -448,7 +476,7 @@ const Requerimiento = () => {
               <input
                 type="text"
                 name="area_instalacion"
-                placeholder="Area de instalación - ej: Escenario - recuerde enviar foto junto al requerimiento"
+                placeholder="ej: Escenario - recuerde enviar por correo fotos de lo solicitado"
                 required
                 className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
               />

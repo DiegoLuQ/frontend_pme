@@ -12,6 +12,7 @@ const AccionesProvider = ({ children }) => {
     setAcciones(data.data[0].acciones_pme);
   };
 
+
   return (
     <AccionesContext.Provider value={{ acciones, getAcciones, setAcciones }}>
       {children}

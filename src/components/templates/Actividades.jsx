@@ -12,7 +12,7 @@ const Actividades = () => {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const { data, error, loading } = useFetch(
-    `accion/actividades/?uuid_accion=${params.uuid_accion}`
+    `accion/actividades/?uuid_accion=${params.uuid_accion}` //agregar id_pme para filtrar
   );
   console.log(data);
   useEffect(() => {
@@ -25,12 +25,7 @@ const Actividades = () => {
 
   const handleCertificadoClick = (data) => {
     navigate(
-      `/user/colegios/${params.colegio}/certificado/${params.year}/${params.id}/${params.uuid_accion}/${dataAccion.subdimensiones}`,
-      {
-        state: {
-          actividad: data,
-        },
-      }
+      `/user/colegios/${params.colegio}/certificado/${params.year}/${params.id}/${params.uuid_accion}/${dataAccion.subdimensiones}`
     );
   };
 

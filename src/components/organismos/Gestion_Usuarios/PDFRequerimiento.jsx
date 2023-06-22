@@ -1,22 +1,34 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ReqGestionContext from "../../../context/ReqGestionProvider";
 import { HeaderPDF } from "../../moleculas/pdfRequerimiento/HeaderPDF";
 import MainPDF from "../../moleculas/pdfRequerimiento/MainPDF";
 import AccionPDF from "../../moleculas/pdfRequerimiento/AccionPDF";
 import ListaRecursos from "../../moleculas/pdfRequerimiento/ListaRecursos";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import ColegioContext from "../../../context/ColegioProvider";
 
 const PDFRequerimiento = () => {
   const params = useParams();
-  const {colegioInfo} = useContext(ColegioContext)
-  console.log(colegioInfo)
-  const navigate = useNavigate()
+  const location = useLocation();
+  const onImprimir = location.state.imprimir;
+  const { colegioInfo } = useContext(ColegioContext);
+  const [botonImprimir, setBotonImprimir] = useState(false);
+
+  useEffect(() => {
+    if (location) {
+      setBotonImprimir(onImprimir);
+    }
+  }, [location]);
+
+  console.log(colegioInfo);
+  const navigate = useNavigate();
   const { requerimientoColegio, postRequerimiento } =
     useContext(ReqGestionContext);
   const doc = new jsPDF("p", "pt", "letter", "UTF8");
-  const handleClick = () => {
+
+  const handleClickCrear = () => {
+    delete requerimientoColegio._id;
     doc.html(document.getElementById("paraPDF"), {
       x: 10,
       y: 2,
@@ -35,7 +47,22 @@ const PDFRequerimiento = () => {
     postRequerimiento(requerimientoColegio);
     navigate("/user/usuarios/gestion/req");
   };
-
+  const handleClickImprimir = () => {
+    doc.html(document.getElementById("paraPDF"), {
+      x: 10,
+      y: 2,
+      margin: [1, 1, 1, 1], // mm
+      width: 216, // 216 = letter paper width in mm, 208 = less the 8mm margin
+      windowWidth: 816, // 816 = letter paper pixel width at 96dpi (web), 786 = less the 30px margin
+      html2canvas: {
+        scale: 0.71, // 816 = letter paper pixel width at 96dpi (web), 786 = less the 30px margin
+      },
+      callback: function (pdf) {
+        pdf.output("dataurlnewwindow");
+        pdf.save("Req -" + requerimientoColegio.codigo_req + ".pdf");
+      },
+    });
+  };
   return (
     <div className=" md:block max-w-[1640px] m-auto ">
       <div
@@ -48,7 +75,7 @@ const PDFRequerimiento = () => {
             value_id={params.codigo_req}
           />
         </div>
-        <p className="my-4 text-base text-center md:text-1xl font-semibold">
+        <p className="my-1 text-base text-center md:text-1xl font-semibold">
           Solicitud de requerimientos operativos reparación-mantención de
           infraestructura y/o compra de activos del{" "}
           {requerimientoColegio.nombre_colegio}
@@ -84,18 +111,30 @@ const PDFRequerimiento = () => {
             <div className="flex flex-col justify-center">
               <p className="text-center">Gerencia de Operaciones</p>
               <p className="italic text-center">Educar para una vida mejor</p>
-              <p className="text-center">{colegioInfo.data.direccion}, Alto Hospicio, Fono {colegioInfo.data.telefono}</p>
+              <p className="text-center">
+                {colegioInfo.data.direccion}, Alto Hospicio, Fono{" "}
+                {colegioInfo.data.telefono}
+              </p>
             </div>
           </div>
         </div>
       </div>
-      <div className="flex justify-center">
-        <button
-          onClick={handleClick}
-          className="bg-green-300 hover:bg-green-400 px-3 py-2 rounded-lg text-md text-black text-2xl"
-        >
-          Crear Requerimiento
-        </button>
+      <div className="flex justify-center gap-1">
+        {botonImprimir ? (
+          <button
+            onClick={handleClickImprimir}
+            className="bg-orange-300 hover:bg-orange-400 px-3 py-2 rounded-lg text-md text-black text-2xl"
+          >
+            Imprimir
+          </button>
+        ) : (
+          <button
+            onClick={handleClickCrear}
+            className="bg-green-300 hover:bg-green-400 px-3 py-2 rounded-lg text-md text-black text-2xl"
+          >
+            Crear Requerimiento
+          </button>
+        )}
       </div>
     </div>
   );

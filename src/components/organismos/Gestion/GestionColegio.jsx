@@ -13,12 +13,12 @@ const GestionColegio = () => {
 
   const [objColegio, setObjColegio] = useState({});
   const { data, error, loading } = useFetch(
-    `colegio/buscar/?id_colegio=${params.id_colegio}`
+    `colegio/buscar/${params.id_colegio}`
   );
   useEffect(() => {
     if (data) {
       console.log(data.data);
-      setObjColegio(data.data);
+      setObjColegio(data.data[0]);
     }
   }, [data]);
   if (error) return <h1>Error</h1>;
