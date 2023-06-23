@@ -98,7 +98,7 @@ function GestionPME() {
       
       <hr />
       <br />
-      <h1 className="text-3xl italic">Registrar Acciones de Año Anterior</h1>
+      <h1 className="text-3xl italic">Registrar Acciones de PME de Año Seleccionado</h1>
       <CopiarAccionesAnterior data_id={params.id_colegio} id_new_pme={newIDPME} year_new_pme={newYearPME}/>
       
     </div>

@@ -12,7 +12,7 @@ const Actividades = () => {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const { data, error, loading } = useFetch(
-    `accion/actividades/?uuid_accion=${params.uuid_accion}&id_pme=${params.id}` //agregar id_pme para filtrar
+    `accion/actividades/?uuid_accion=${params.uuid_accion}&id_pme=${params.id}&year=${params.year}` //agregar id_pme para filtrar
   );
   console.log(params);
   useEffect(() => {

@@ -4,6 +4,8 @@ import Input_Label from "../../atomos/Input_Label";
 import OptionList from "../../atomos/OptionList";
 import PrimaryBtn from "../../atomos/PrimaryBtn";
 import axios from "axios";
+import { postCopiarAcciones } from "../../../api/Api_acciones";
+import { postCopiarActividades } from "../../../api/Api_actividad";
 
 const CopiarAccionesAnterior = ({ data_id, id_new_pme, year_new_pme }) => {
   const { data, error, loading } = useFetch(`pme/pme_colegio/${data_id}`);
@@ -19,10 +21,12 @@ const CopiarAccionesAnterior = ({ data_id, id_new_pme, year_new_pme }) => {
   if (loading) return <h1>Cargando</h1>;
   if (error) return <h1>Error</h1>;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(e.target.id_pme.value);
     console.log(e.target.id_pme.value);
     console.log(e.target.new_id_pme.value);
+    console.log(typeof(e.target.pme_year.value));
+    
     if (e.target.new_id_pme.value === e.target.id_pme.value) {
       setMostrarMensaje(true);
       setAlert("Los PME no deben ser iguales");
@@ -31,30 +35,11 @@ const CopiarAccionesAnterior = ({ data_id, id_new_pme, year_new_pme }) => {
       }, 3000);
       return;
     }
-    setMostrarMensaje(false);
-    setAlert("");
-    axios
-      .post(
-        `${import.meta.env.VITE_API}/accion/copiar/acciones/${e.target.id_pme.value}/${e.target.new_id_pme.value}`
-      )
-      .then((resp) => {
-        console.log(resp)
-        setMostrarMensaje(true);
-        setAlert("se copio correctamente las acciones al nuevo PME");
-        setTimeout(() => {
-          setMostrarMensaje(false);
-        }, 3000);
-      })
-      .catch((err) => {
-        console.log(err.response);
-        if (err.response && err.response.status == 400) {
-          setAlert(err.response.data.msg);
-          setMostrarMensaje(true);
-          setTimeout(() => {
-            setMostrarMensaje(false);
-          }, 3000);
-        }
-      });
+    const res_acciones = await postCopiarAcciones(e.target.id_pme.value, e.target.new_id_pme.value, parseInt(e.target.pme_year.value))
+    console.log(res_acciones)
+    const res_actividades = await postCopiarActividades(e.target.id_pme.value, e.target.new_id_pme.value, parseInt(e.target.pme_year.value))
+    console.log(res_actividades)
+    setAlert("Acciones y Actividades copiadas con exito!");
   };
   function handleClick(year, _id) {
     const data2 = {
@@ -74,7 +59,7 @@ const CopiarAccionesAnterior = ({ data_id, id_new_pme, year_new_pme }) => {
               <th>ID</th>
               <th>Año</th>
               <th>Director</th>
-              <th>Acción</th>
+              <th>Elegir</th>
             </tr>
           </thead>
           <tbody>
@@ -111,6 +96,7 @@ const CopiarAccionesAnterior = ({ data_id, id_new_pme, year_new_pme }) => {
             defaultValue={year_new_pme ? year_new_pme : dataPME.year}
             className="p-1 rounded-lg border col-span-2"
             placeholder="Año de PME"
+            name="pme_year"
             disabled
           />
         </div>
@@ -133,7 +119,7 @@ const CopiarAccionesAnterior = ({ data_id, id_new_pme, year_new_pme }) => {
           class_="text-sm md:text-base w-[100%] md:w-[50%] md:font-base px-2 py-2 rounded-lg bg-orange-500 hover:rounded-lg hover:bg-orange-600 text-white font-bold my-3"
         />
         {mostrarMensaje && (
-          <span className="text-1xl italic font-semibold text-red-500">
+          <span className="text-1xl italic font-semibold text-green-500">
             {alert}
           </span>
         )}

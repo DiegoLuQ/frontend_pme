@@ -17,7 +17,7 @@ const Recursos = () => {
   const [recursos, setRecursos] = useState([]); // Array de actividades y sus recursos
   const [RecursosData, setRecursosData] = useState(); // Lista de los recursos de la actividad
   const [newRecurso, setNewRecurso] = useState(""); // Agregando nuevo recurso
-  const { data, error, loading } = useFetch(`recursos/${params.id}`); // la data id_pme
+  const { data, error, loading } = useFetch(`recursos/${params.id}/${params.year}`); // la data id_pme
   const [modal, setModalVisible] = useState(false); // cuando abrimos y cerramos el modal
   const [recursoReq, setRecursoReq] = useState("");
   const [modalDetalle, setModalDetalle] = useState(false);

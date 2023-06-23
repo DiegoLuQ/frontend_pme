@@ -20,7 +20,7 @@ function Certificado() {
   const [director, setDirector] = useState([]);
   const [load, setLoad] = useState(true);
   const { data, error, loading } = useFetch(
-    `accion/actividades/?uuid_accion=${params.uuid_accion}&id_pme=${params.id}`
+    `accion/actividades/?uuid_accion=${params.uuid_accion}&id_pme=${params.id}&year=${params.year}`
   );
   useEffect(() => {
     if (data) {
@@ -81,7 +81,7 @@ function Certificado() {
               />
             </div>
             <div className="">
-              <p>Fundación Educacional {params.colegio}</p>
+              <p>{params.colegio === "Macaya" ? "Fundación Educacional Macaya" : "Fundación Educacional Puerto Nuevo"}</p>
               <p>
                 {director.direccion} FONO:{director.telefono}
               </p>
@@ -169,7 +169,7 @@ function Certificado() {
               <div>
                 <p className="font-bold">{director.director}</p>
                 <p>Director</p>
-                <p className="italic">Fundacion educacional {params.colegio}</p>
+                <p className="italic">{params.colegio === "Macaya" ? "Fundación Educacional Macaya" : "Fundación Educacional Puerto Nuevo"}</p>
               </div>
             </div>
           </div>
@@ -183,7 +183,7 @@ function Certificado() {
             <div className="flex gap-5">
               <div className="">
                 <p className="text-lg italic font-bold text-center">
-                  Fundacion educacional {params.colegio}
+                  {params.colegio === "Macaya" ? "Fundación Educacional Macaya" : "Fundación Educacional Puerto Nuevo"}
                 </p>
                 <p className="text-lg font-bold text-center">
                   {director.direccion} - Fono: {director.telefono}
