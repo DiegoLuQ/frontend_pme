@@ -147,7 +147,7 @@ function Certificado() {
                     </label>
                     <p className="text-end">:</p>
                   </div>
-                  <div className="mt-7 ml-2">{actividadPME}</div>
+                  <textarea className="mt-7 ml-2 p-1" id="" cols="3" rows="5" defaultValue={actividadPME}></textarea>
                 </div>
               ) : (
                 <></>

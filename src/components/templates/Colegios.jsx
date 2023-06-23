@@ -56,7 +56,7 @@ function Colegios() {
               {/* <Presupuesto id_colegio={item._id}  colegio={item.nombre} /> */}
             </div>
             <div className="flex flex-row items-center md:flex md:flex-row md:justify-center mb-4">
-              <Link
+              {/* <Link
                 to={`/user/gestion/${item.nombre}/${item._id}`}
                 className={
                   item.nombre == "Macaya"
@@ -65,7 +65,7 @@ function Colegios() {
                 }
               >
                 Gestionar {item.nombre}
-              </Link>
+              </Link> */}
             </div>
           </div>
         ))}
