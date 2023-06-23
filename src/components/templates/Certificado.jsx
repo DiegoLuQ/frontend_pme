@@ -6,25 +6,31 @@ import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 
 function Certificado() {
-  const location = useLocation();
-  const datito = location.state.actividad
-  const [actividadPME, setActividadPME] = useState(datito);
-  console.log(location)
   const params = useParams();
-  if (!params) {
-    return;
-  }
-  console.log(params)
+  const location = useLocation();
+  const datito = location.state.actividad;
+  const [actividadPME, setActividadPME] = useState();
   const arraySubdimension = params.subdimension.split(",");
   const [dataAccion, setDataAccion] = useState([]);
   const [director, setDirector] = useState([]);
+  const [modal, setModalVisible] = useState(false);
   const [load, setLoad] = useState(true);
   const { data, error, loading } = useFetch(
     `accion/actividades/?uuid_accion=${params.uuid_accion}&id_pme=${params.id}&year=${params.year}`
   );
+  if (!params && !location) {
+    return;
+  }
+  const onModal = () => {
+    setModalVisible(true);
+  };
+  const closeModal = () => {
+    setModalVisible(false);
+  };
   useEffect(() => {
     if (data) {
       setDataAccion(data[0]);
+      setActividadPME(datito);
     }
     axios
       .get(`${import.meta.env.VITE_API}/colegio/${params.colegio}`)
@@ -61,7 +67,82 @@ function Certificado() {
 
   return (
     <>
-      <div className="hidden md:block max-w-[1440px] m-auto">
+      <div className="max-w-[1440px] m-auto">
+        <div className="flex flex-col justify-start max-w-[900px] m-auto py-2">
+          {modal ? (
+            <div
+              tabIndex="-1"
+              aria-hidden="true"
+              className="fixed inset-0 flex items-center justify-center z-50"
+            >
+              <div
+                className="fixed inset-0 bg-black opacity-25"
+                onClick={closeModal}
+              ></div>
+              <div className="relative w-full max-w-2xl md:max-w-4xl max-h-full">
+                <div className="relative rounded-lg shadow dark:bg-gray-700 bg-gray-700">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </button>
+                  {/* Inputs */}
+                  <div className="px-6 py-6 lg:px-8">
+                    <h3 className="mb-4 text-xl font-medium text-white">
+                      Edificar Actividad de la acción
+                    </h3>
+                    <form className="space-y-6">
+                      <div>
+                        <label className="block mb-2 text-sm font-medium text-white">
+                          Actividad
+                        </label>
+                        <textarea
+                          name="actividad"
+                          className="border outline-none p-1 bg-gray-500 text-white"
+                          defaultValue={actividadPME}
+                          onChange={(e) => setActividadPME(e.target.value)}
+                          cols="110"
+                          rows="3"
+                        ></textarea>
+                      </div>
+                      <div></div>
+                      <button
+                        type="submit"
+                        onClick={closeModal}
+                        className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                      >
+                        Modificar Recursos
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <></>
+          )}
+          <button
+            onClick={onModal}
+            className="bg-green-400 hover:bg-green-500 px-2 py-1"
+          >
+            Editar actividad
+          </button>
+        </div>
+        <hr />
         <div
           className="grid grid-col-10 max-w-[900px] m-auto p-3 mt-4 mb-4"
           id="paraPDF"
@@ -81,7 +162,11 @@ function Certificado() {
               />
             </div>
             <div className="">
-              <p>{params.colegio === "Macaya" ? "Fundación Educacional Macaya" : "Fundación Educacional Puerto Nuevo"}</p>
+              <p>
+                {params.colegio === "Macaya"
+                  ? "Fundación Educacional Macaya"
+                  : "Fundación Educacional Puerto Nuevo"}
+              </p>
               <p>
                 {director.direccion} FONO:{director.telefono}
               </p>
@@ -147,7 +232,7 @@ function Certificado() {
                     </label>
                     <p className="text-end">:</p>
                   </div>
-                  <textarea className="mt-7 ml-2 p-1" id="" cols="3" rows="5" defaultValue={actividadPME}></textarea>
+                  <div className="mt-7 ml-2">{actividadPME}</div>
                 </div>
               ) : (
                 <></>
@@ -169,7 +254,11 @@ function Certificado() {
               <div>
                 <p className="font-bold">{director.director}</p>
                 <p>Director</p>
-                <p className="italic">{params.colegio === "Macaya" ? "Fundación Educacional Macaya" : "Fundación Educacional Puerto Nuevo"}</p>
+                <p className="italic">
+                  {params.colegio === "Macaya"
+                    ? "Fundación Educacional Macaya"
+                    : "Fundación Educacional Puerto Nuevo"}
+                </p>
               </div>
             </div>
           </div>
@@ -183,7 +272,9 @@ function Certificado() {
             <div className="flex gap-5">
               <div className="">
                 <p className="text-lg italic font-bold text-center">
-                  {params.colegio === "Macaya" ? "Fundación Educacional Macaya" : "Fundación Educacional Puerto Nuevo"}
+                  {params.colegio === "Macaya"
+                    ? "Fundación Educacional Macaya"
+                    : "Fundación Educacional Puerto Nuevo"}
                 </p>
                 <p className="text-lg font-bold text-center">
                   {director.direccion} - Fono: {director.telefono}
