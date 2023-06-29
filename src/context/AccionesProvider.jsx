@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { getAccionesRequest } from "../api/Api_acciones";
+import { getAccionesRequest, getSubdimensionesRequest } from "../api/Api_acciones";
 
 const AccionesContext = createContext();
 
@@ -12,9 +12,13 @@ const AccionesProvider = ({ children }) => {
     setAcciones(data.data[0].acciones_pme);
   };
 
+  const getSubdimensiones = async () => {
+    const res = await getSubdimensionesRequest()
+    return res.data
+  }
 
   return (
-    <AccionesContext.Provider value={{ acciones, getAcciones, setAcciones }}>
+    <AccionesContext.Provider value={{ acciones, getAcciones, setAcciones, getSubdimensiones }}>
       {children}
     </AccionesContext.Provider>
   );

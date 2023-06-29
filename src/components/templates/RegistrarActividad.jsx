@@ -1,14 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import AccionesContext from "../../context/AccionesProvider";
-import { postActividadRequest } from "../../api/Api_actividad";
 import ActividadContext from "../../context/ActividadProvider";
+import { useParams } from "react-router-dom";
 
 const RegistrarActividad = () => {
+  const params = useParams();
+  console.log(params);
   const [recursos, setRecursos] = useState([]);
   const [newRecurso, setNuevoRecurso] = useState("");
   const [btnOn, setBtnOn] = useState({}); //
   const [nuevaActividad, setNuevaActividad] = useState();
-  const { acciones, setAcciones } = useContext(AccionesContext);
+  const { acciones, setAcciones, getSubdimensiones } =
+    useContext(AccionesContext);
   const [colegioData, setColegioData] = useState();
   const [subdimensionDeAccion, setSubdimensionDeAccion] = useState();
   const [accionData, setAccionData] = useState();
@@ -40,8 +43,7 @@ const RegistrarActividad = () => {
     console.log(e.target.value);
     let data = acciones.find((accion) => accion._id === e.target.value);
     setAccionData(data);
-    setSubdimensionDeAccion(data.subdimensiones);
-    setDimension(data.dimension);
+    
   };
   const handleInputChangeNewRecurso = (e) => {
     const recurso_nuevo = e.target.value.toLowerCase();
@@ -70,6 +72,13 @@ const RegistrarActividad = () => {
     const listaNuevoRecursos = newRecurso.split(",");
     setRecursos(listaNuevoRecursos);
   };
+  useEffect(() => {
+    async function obtenerSubdimensiones() {
+      const res = await getSubdimensiones();
+      setSubdimensionDeAccion(res);
+    }
+    obtenerSubdimensiones();
+  }, [getSubdimensiones]);
 
   const handleRegistrarActividad = async (e) => {
     e.preventDefault();
@@ -110,13 +119,15 @@ const RegistrarActividad = () => {
       dimension,
       recursos_actividad: recursos,
       subdimension: nuevaActividad.subdimension,
-      nombre_actividad: nuevaActividad.nombre_actividad,
-      descripcion_actividad: nuevaActividad.descripcion_actividad,
-      medios_ver: nuevaActividad.medios_ver,
-      responsable: nuevaActividad.responsable,
+      nombre_actividad: nuevaActividad.nombre_actividad.toLowerCase(),
+      descripcion_actividad: nuevaActividad.descripcion_actividad.toLowerCase(),
+      medios_ver: nuevaActividad.medios_ver.toLowerCase(),
+      responsable: nuevaActividad.responsable.toLowerCase(),
       monto: parseInt(nuevaActividad.monto),
+      year: parseInt(params.year),
     };
     const res = await postActividad(data);
+    console.log(res)
     if (res.status == 201) {
       setBtnOn({
         ok: true,
@@ -138,7 +149,7 @@ const RegistrarActividad = () => {
             <div className="space-y-6">
               <div>
                 <label className="block mb-2 text-sm font-medium text-white">
-                  Actividad2
+                  Actividad
                 </label>
                 <input
                   name="nombre_actividad"
@@ -172,14 +183,14 @@ const RegistrarActividad = () => {
                     </div>
                   </div>
                 </div>
-                <ul className="grid grid-cols-6 gap-2 mt-5">
+                <ul className="grid grid-cols-4 gap-2 mt-5">
                   {recursos.length > 0 ? (
                     <>
                       {" "}
                       {recursos.map((item, index) => (
                         <ol
                           key={index}
-                          className="relative flex items-center  justify-center text-white p-3 text-center rounded-lg ring-1 ring-pink-500"
+                          className="relative flex items-center justify-center text-white p-3 text-center rounded-lg ring-1 ring-pink-500"
                         >
                           <button
                             onClick={() => handleDeleteRecursoIndex(index)}
@@ -205,9 +216,7 @@ const RegistrarActividad = () => {
                     </>
                   ) : (
                     <div>
-                      <p className="text-white w-full">
-                        No hay recursos
-                      </p>
+                      <p className="text-white w-full">No hay recursos</p>
                     </div>
                   )}
                 </ul>
@@ -274,14 +283,19 @@ const RegistrarActividad = () => {
                 <label className="block mb-2 text-sm font-medium text-white">
                   Dimensión
                 </label>
-                <input
+                <select
                   name="dimension"
-                  onChange={handleInputChangeNuevaActividad}
-                  defaultValue={dimension}
-                  className="bg-gray-50 w-full border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 "
-                  placeholder="dimensión"
-                  required
-                />
+                  onChange={(e) => setDimension(e.target.value)}
+                  className="col-span-12 md:col-span-8 p-2 w-[100%] rounded-lg border hover:ring-1 hover:ring-blue-500 hover:ring-inset ring-1 ring-blue-300"
+                >
+                  <option className="text-xs">
+                    Seleccione una dimension
+                  </option>
+                  <option className="text-xs">Gestión pedagógica</option>
+                  <option className="text-xs">Convivencia</option>
+                  <option className="text-xs">Gestión de recursos</option>
+                  <option className="text-xs">Liderazgo</option>
+                </select>
               </div>
               <div className="w-6/12">
                 <label className="block mb-2 text-sm font-medium text-white">

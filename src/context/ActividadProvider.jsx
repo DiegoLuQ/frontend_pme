@@ -9,7 +9,6 @@ const ActividadProvider = ({ children }) => {
   const postActividad = async (data) => {
     try {
        const res = await postActividadRequest(data)
-       console.log(res)
        return res
     } catch (error) {
       console.log(error);

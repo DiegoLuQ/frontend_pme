@@ -3,38 +3,41 @@ import useFetch from "../../hooks/useFetch";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../../context/AuthProvider";
 import axios from "axios";
-import useAddReq from "../../hooks/useAddReq";
 import AddItemContext from "../../context/ReqProvider";
 import ColegioContext from "../../context/ColegioProvider";
 import { postBusquedaRequest } from "../../api/Api_busqueda";
 import AccionesContext from "../../context/AccionesProvider";
-import ActividadContext from "../../context/ActividadProvider";
 
 const Recursos = () => {
   const params = useParams();
   const navigate = useNavigate();
-  console.log(params)
   const [recursos, setRecursos] = useState([]); // Array de actividades y sus recursos
   const [RecursosData, setRecursosData] = useState(); // Lista de los recursos de la actividad
   const [newRecurso, setNewRecurso] = useState(""); // Agregando nuevo recurso
-  const { data, error, loading } = useFetch(`recursos/${params.id}/${params.year}`); // la data id_pme
+  const { data, error, loading } = useFetch(
+    `recursos/${params.id}/${params.year}`
+  ); // la data id_pme
   const [modal, setModalVisible] = useState(false); // cuando abrimos y cerramos el modal
   const [recursoReq, setRecursoReq] = useState("");
   const [modalDetalle, setModalDetalle] = useState(false);
   const [modalReq, setModalReq] = useState(false);
-  const [addRequerimiento, setAddRequerimiento] = useState({});
+
   const [btnOn, setBtnOn] = useState({}); //
   const { auth } = useContext(AuthContext);
   const { setRequerimientoList, requerimientoList, addActividad } =
     useContext(AddItemContext);
   const { colegioInfo } = useContext(ColegioContext);
-  const { getAcciones, acciones } = useContext(AccionesContext);
-  const { getActividadesExcel } = useContext(ActividadContext);
+  const { getAcciones } = useContext(AccionesContext);
   const [cantidadReq, setCantidadReq] = useState();
   const handleInputChangeCantidad = (e) => {
     setCantidadReq(e.target.value);
   };
-
+  const normalizeText = (text) => {
+    return text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  };
   const options = {
     hour12: false,
     timeZone: "America/Santiago",
@@ -105,9 +108,9 @@ const Recursos = () => {
     const regexRecurso = new RegExp(filtroRecurso, "i");
     const regexRecursopme = new RegExp(filtroRecursoPME, "i");
     const resultadoFiltrado = data.filter((item) => {
-      const actividadCoincide = regexActividad.test(item.nombre_actividad);
+      const actividadCoincide = regexActividad.test(normalizeText(item.nombre_actividad));
       const recursoCoincide = item.recursos_actividad.some((recurso) =>
-        regexRecurso.test(recurso)
+        regexRecurso.test(normalizeText(recurso))
       );
       const recursoPME = regexRecursopme.test(
         item.accion.recursos_necesarios_ejecucion
@@ -129,7 +132,7 @@ const Recursos = () => {
       };
       if (dataBuscar.data_length === 0) {
         console.log(dataBuscar);
-        // await postBusquedaRequest(dataBuscar);
+        await postBusquedaRequest(dataBuscar);
         return;
       }
       if (dataBuscar.data_length > 4) {
@@ -172,15 +175,7 @@ const Recursos = () => {
       });
     }
   };
-  const handleReqSinActividad = () => {
-    addActividad({
-      accion: "sin acción",
-      dimension: "sin dimensión",
-      subdimension: "sin subdimensión",
-      actividad: "sin actividad",
-    });
-    navigate(`/user/usuarios/gestion/req`);
-  };
+
   const handleInputChangeNewRecurso = (e) => {
     const recurso_nuevo = e.target.value.toLowerCase();
 
@@ -237,18 +232,12 @@ const Recursos = () => {
   // componente de Certificado
   const handleCertificadoClick = (data) => {
     navigate(
-      `/user/colegios/${params.name_colegio}/certificado/${params.year}/${params.id}/${data.uuid_accion}/${data.subdimension}`,
+      `/user/colegios/${params.name_colegio}/actividades/${params.year}/${params.id}/${data.uuid_accion}/${data.subdimension}`,
       {
         state: {
           actividad: data.nombre_actividad,
         },
       }
-    );
-  };
-
-  const handleAgregarActividad = () => {
-    navigate(
-      `/user/colegios/${params.name_colegio}/recursos/${params.year}/${params.id}/registrar_actividad`
     );
   };
 
@@ -266,67 +255,7 @@ const Recursos = () => {
       <h1 className="font-bold text-2xl md:text-5xl text-center text-gray-600 mb-4">
         Recursos de Actividades - {params.name_colegio}
       </h1>
-      <div className="my-2">
-        {auth.admin ? (
-          <div className="flex justify-between w-full">
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleAgregarActividad()}
-                className="py-2 px-3 bg-green-600 hover:bg-green-500 text-white hover:text-black rounded-xl"
-              >
-                Nueva Actividad
-              </button>
-              <a
-                href={`${import.meta.env.VITE_API}/recursos/descargar/pme/${params.id}`}
-                className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl"
-              >
-                Descargar Excel Actividades
-              </a>
-              <button className="py-2 px-3 bg-sky-500 hover:bg-sky-400 text-white hover:text-black rounded-xl">
-                Busquedas de usuarios
-              </button>
-            </div>
-            <div className="flex gap-2">
-              <Link
-                to={`/user/usuarios/gestion/req`}
-                className="py-2 px-3 bg-blue-500 hover:bg-blue-400 text-white hover:text-black rounded-xl"
-              >
-                Ir Requerimiento
-              </Link>
-              <button
-                onClick={() => handleReqSinActividad()}
-                className="py-2 px-3 bg-gray-500 hover:bg-gray-400 text-white hover:text-black rounded-xl"
-              >
-                Crear Requerimiento sin actividad
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex gap-2 justify-end">
-            {" "}
-            <a
-              href={`${import.meta.env.VITE_API}/recursos/descargar/pme/${
-                params.id
-              }`}
-              className="py-2 px-3 bg-yellow-500 hover:bg-yellow-400 text-white hover:text-black rounded-xl"
-            >
-              Descargar Excel Recursos
-            </a>
-            <button
-              onClick={() => handleReqSinActividad()}
-              className="py-2 px-3 bg-gray-500 hover:bg-gray-400 text-white hover:text-black rounded-xl"
-            >
-              Requerimiento sin actividad
-            </button>
-            <Link
-              to={`/user/usuarios/gestion/req`}
-              className="py-2 px-3 bg-blue-500 hover:bg-blue-400 text-white hover:text-black rounded-xl"
-            >
-              Ir Requerimiento
-            </Link>
-          </div>
-        )}
-      </div>
+
       <div className="bg-teal-700 p-2 flex flex-col gap-2 items-center justify-between md:flex md:flex-row rounded-xl">
         <div className="flex gap-2">
           <input

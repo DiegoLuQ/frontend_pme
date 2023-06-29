@@ -3,10 +3,13 @@ import useFetch from "../../hooks/useFetch";
 import AccionesUpdate from "../organismos/AccionesUpdate";
 import Pme from "./Pme";
 import { Link } from "react-router-dom";
+import AuthContext from "../../context/AuthProvider";
+import Presupuesto from "../organismos/Gestion_Usuarios/Presupuesto";
 
 function Colegios() {
   const [colegio, setColegio] = useState([]);
   const { data, errror, loading } = useFetch("colegio/pme/");
+  const { auth } = useContext(AuthContext);
 
   useEffect(() => {
     if (data) {
@@ -50,23 +53,28 @@ function Colegios() {
                 <span className="font-bold">Telefono:</span> {item.telefono}
               </p>
               <div>
-              <Pme id={item._id} colegio={item.nombre} colegioDataApi={item} />
-
+                <Pme
+                  id={item._id}
+                  colegio={item.nombre}
+                  colegioDataApi={item}
+                />
               </div>
               {/* <Presupuesto id_colegio={item._id}  colegio={item.nombre} /> */}
             </div>
-            <div className="flex flex-row items-center md:flex md:flex-row md:justify-center mb-4">
-              {/* <Link
-                to={`/user/gestion/${item.nombre}/${item._id}`}
-                className={
-                  item.nombre == "Macaya"
-                    ? "text-green-600 font-bold text-base md:text-lg md:px-2 mx-2 py-1 bg-gray-800 mt-2 w-[100%] md:w-[70%] hover:bg-gray-700 cursor-pointer rounded-lg"
-                    : "text-blue-500 font-bold text-base md:text-lg md:px-2 mx-2 py-1 bg-gray-800 mt-2 w-[100%] md:w-[70%] hover:bg-gray-700 cursor-pointer rounded-lg"
-                }
-              >
-                Gestionar {item.nombre}
-              </Link> */}
-            </div>
+            {auth.admin && (
+              <div className="flex flex-row items-center md:flex md:flex-row md:justify-center mb-4">
+                <Link
+                  to={`/user/gestion/${item.nombre}/${item._id}`}
+                  className={
+                    item.nombre == "Macaya"
+                      ? "text-green-600 font-bold text-base md:text-lg md:px-2 mx-2 py-1 bg-gray-800 mt-2 w-[100%] md:w-[70%] hover:bg-gray-700 cursor-pointer rounded-lg"
+                      : "text-blue-500 font-bold text-base md:text-lg md:px-2 mx-2 py-1 bg-gray-800 mt-2 w-[100%] md:w-[70%] hover:bg-gray-700 cursor-pointer rounded-lg"
+                  }
+                >
+                  Gestionar {item.nombre}
+                </Link>
+              </div>
+            )}
           </div>
         ))}
       </div>

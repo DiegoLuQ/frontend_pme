@@ -43,8 +43,8 @@ const PresupuestoColegio = () => {
       <h1 className="text-center text-4xl font-bold italic text-teal-600">
         Presupuesto {params.name_colegio} - {params.year}
       </h1>
-      <div className=" flex gap-2">
-        <div className="mt-3">
+      <div className="grid grid-cols-12 gap-2">
+        <div className="col-span-2 mt-3">
           <div className="flex flex-col gap-2 sticky top-0">
             <div className="bg-gray-200 py-2 text-center">
               <h1 className="text-center text-2xl">Filtrar Por</h1>
@@ -126,7 +126,8 @@ const PresupuestoColegio = () => {
             </button>
           </div>
         </div>
-        <table className="w-12/12 mt-3">
+        <div className="col-span-10">
+        <table className=" mt-3">
           <thead className="">
             <tr className="text-left border">
               <th className="p-2"> Area </th>
@@ -151,6 +152,8 @@ const PresupuestoColegio = () => {
             ))}
           </tbody>
         </table>
+
+        </div>
       </div>
     </div>
   );

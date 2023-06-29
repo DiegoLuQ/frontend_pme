@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { jsPDF } from "jspdf";
 
 import useFetch from "../../hooks/useFetch";
@@ -8,6 +8,7 @@ import axios from "axios";
 function Certificado() {
   const params = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const datito = location.state.actividad;
   const [actividadPME, setActividadPME] = useState();
   const arraySubdimension = params.subdimension.split(",");
@@ -21,6 +22,10 @@ function Certificado() {
   if (!params && !location) {
     return;
   }
+  const goBack = () => {
+    navigate.goBack();
+  };
+
   const onModal = () => {
     setModalVisible(true);
   };
@@ -33,7 +38,7 @@ function Certificado() {
       setActividadPME(datito);
     }
     axios
-      .get(`${import.meta.env.VITE_API}/colegio/${params.colegio}`)
+      .get(`${import.meta.env.VITE_API}/colegio/${params.name_colegio}`)
       .then((respo) => {
         setDirector(respo.data.data);
         setLoad(false);
@@ -137,10 +142,24 @@ function Certificado() {
           )}
           <button
             onClick={onModal}
-            className="bg-green-400 hover:bg-green-500 px-2 py-1"
+            className="bg-green-400 hover:bg-green-500 px-2 py-1 my-2"
           >
             Editar actividad
           </button>
+          <div className="flex gap-2">
+            <Link
+              to={`/user/colegios/${params.name_colegio}/recursos/${params.year}/${params.id}`}
+              className="bg-slate-400 hover:bg-slate-300 px-2 rounded-md"
+            >
+              ⬅️Ir a Actividades
+            </Link>
+            <Link
+              to={`/user/colegios/${params.name_colegio}/pme/${params.year}/${params.id}`}
+              className="bg-slate-400 hover:bg-slate-300 hover:rounded-lg rounded-lg px-2"
+            >
+              ⬅️Ir a Acciones
+            </Link>
+          </div>
         </div>
         <hr />
         <div
@@ -153,7 +172,7 @@ function Certificado() {
               <img
                 // DEBES MODIFICAR EL TAMAÑO DE LA IMAGEN, PASALO A JPG
                 src={
-                  params.colegio == "Macaya"
+                  params.name_colegio == "Macaya"
                     ? "https://i.postimg.cc/fbXSL2zp/mc.png"
                     : "https://i.postimg.cc/QdvWjG3c/dp.png"
                 }
@@ -163,7 +182,7 @@ function Certificado() {
             </div>
             <div className="">
               <p>
-                {params.colegio === "Macaya"
+                {params.name_colegio === "Macaya"
                   ? "Fundación Educacional Macaya"
                   : "Fundación Educacional Puerto Nuevo"}
               </p>
@@ -244,7 +263,7 @@ function Certificado() {
               <img
                 // DEBES MODIFICAR EL TAMAÑO DE LA IMAGEN, PASALO A JPG
                 src={
-                  params.colegio == "Macaya"
+                  params.name_colegio == "Macaya"
                     ? "https://i.postimg.cc/fbXSL2zp/mc.png"
                     : "https://i.postimg.cc/QdvWjG3c/dp.png"
                 }
@@ -255,7 +274,7 @@ function Certificado() {
                 <p className="font-bold">{director.director}</p>
                 <p>Director</p>
                 <p className="italic">
-                  {params.colegio === "Macaya"
+                  {params.name_colegio === "Macaya"
                     ? "Fundación Educacional Macaya"
                     : "Fundación Educacional Puerto Nuevo"}
                 </p>
@@ -272,7 +291,7 @@ function Certificado() {
             <div className="flex gap-5">
               <div className="">
                 <p className="text-lg italic font-bold text-center">
-                  {params.colegio === "Macaya"
+                  {params.name_colegio === "Macaya"
                     ? "Fundación Educacional Macaya"
                     : "Fundación Educacional Puerto Nuevo"}
                 </p>

@@ -21,6 +21,7 @@ import Prueba from "../components/templates/Prueba";
 import RegistrarActividad from "../components/templates/RegistrarActividad";
 import PDFRequerimiento from "../components/organismos/Gestion_Usuarios/PDFRequerimiento";
 import MisRequerimientos from "../components/organismos/Gestion_Usuarios/MisRequerimientos";
+import ContainerRecurso from "../components/organismos/ContainerRecurso";
 
 const router = createBrowserRouter([
   {
@@ -39,7 +40,7 @@ const router = createBrowserRouter([
       {
         path: "/colegios",
         element: <Prueba />,
-      }
+      },
     ],
   },
   {
@@ -57,15 +58,15 @@ const router = createBrowserRouter([
       },
       {
         // ACCIONES
-        path: "/user/colegios/:colegio/pme/:year/:id",
+        path: "/user/colegios/:name_colegio/pme/:year/:id",
         element: <Macaya />,
       },
       {
-        path: "/user/colegios/:colegio/actividades/:year/:id/:uuid_accion",
+        path: "/user/colegios/:name_colegio/actividades/:year/:id/:uuid_accion",
         element: <Actividades />,
       },
       {
-        path: "/user/colegios/:colegio/certificado/:year/:id/:uuid_accion/:subdimension",
+        path: "/user/colegios/:name_colegio/actividades/:year/:id/:uuid_accion/:subdimension",
         element: <Certificado />,
       },
       {
@@ -74,12 +75,20 @@ const router = createBrowserRouter([
       },
       {
         path: "/user/colegios/:name_colegio/recursos/:year/:id/",
-        element: <Recursos />,
+        element: <ContainerRecurso /> ,
+        children: [
+          {
+            path: "/user/colegios/:name_colegio/recursos/:year/:id/",
+            element: <Recursos />,
+          },
+          {
+            path: "/user/colegios/:name_colegio/recursos/:year/:id/registrar_actividad",
+            element: <RegistrarActividad />,
+          },
+
+        ],
       },
-      {
-        path: "/user/colegios/:name_colegio/recursos/:year/:id/registrar_actividad",
-        element: <RegistrarActividad />
-      },
+
       {
         path: "/user/colegios/:name_colegio/presupuesto/:year/:id",
         element: <PresupuestoColegio />,
@@ -115,9 +124,9 @@ const router = createBrowserRouter([
             element: <PDFRequerimiento />,
           },
           {
-            path:"/user/usuarios/gestion/mis_requerimientos/:area",
-            element: <MisRequerimientos />
-          }
+            path: "/user/usuarios/gestion/mis_requerimientos/:area",
+            element: <MisRequerimientos />,
+          },
         ],
       },
     ],

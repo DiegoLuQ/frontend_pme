@@ -41,11 +41,11 @@ const Macaya = () => {
   return (
     <div className="max-w-[1200px] m-auto">
       <h1 className="font-bold text-2xl md:text-5xl text-center text-gray-600">
-        PME de {params.colegio.toUpperCase()} - {params.year}
+        PME de {params.name_colegio.toUpperCase()} - {params.year}
       </h1>
       <div className="flex mt-3 justify-center gap-2">
         {/* <Link
-          to={`/admin/colegios/${params.colegio}/detalles/${params.year}/${params.id}`}
+          to={`/admin/colegios/${params.name_colegio}/detalles/${params.year}/${params.id}`}
           className="flex gap-2 justify-center font-semibold duration-300 ease-in-out bg-slate-400 hover:bg-slate-500 hover:rounded-lg text-gray-200 rounded-lg px-2 md:w-[20%]"
         >
           Buscar Actividades o Recursos
@@ -69,13 +69,13 @@ const Macaya = () => {
             key={item._id}
           >
             <Link
-              to={`/user/colegios/${params.colegio}/actividades/${params.year}/${params.id}/${item.uuid_accion}`}
+              to={`/user/colegios/${params.name_colegio}/actividades/${params.year}/${params.id}/${item.uuid_accion}`}
               className="flex gap-2 hover:bg-gray-300 duration-300 ease-in-out hover:rounded-lg rounded-lg px-2 w-[100%]"
             >
               <p>{index + 1}</p>
               <p
                 className={
-                  params.colegio == "Macaya"
+                  params.name_colegio == "Macaya"
                     ? "text-green-600 hover:text-green-800 cursor-pointer "
                     : "text-blue-600 hover:text-blue-800 cursor-pointer "
                 }
@@ -85,7 +85,7 @@ const Macaya = () => {
             </Link>
             <div className="flex gap-2">
               <Link
-                to={`/user/colegios/${params.colegio}/actividades/${params.year}/${params.id}/${item.uuid_accion}`}
+                to={`/user/colegios/${params.name_colegio}/actividades/${params.year}/${params.id}/${item.uuid_accion}`}
                 className="hidden md:block px-3 bg-teal-700 hover:bg-teal-600 rounded-lg font-semibold text-white text-center"
               >
                 Ver

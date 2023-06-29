@@ -14,7 +14,6 @@ const Actividades = () => {
   const { data, error, loading } = useFetch(
     `accion/actividades/?uuid_accion=${params.uuid_accion}&id_pme=${params.id}&year=${params.year}` //agregar id_pme para filtrar
   );
-  console.log(params);
   useEffect(() => {
     if (data) {
       setActividades(data[0].actividades);
@@ -25,7 +24,7 @@ const Actividades = () => {
 
   const handleCertificadoClick = (data) => {
     navigate(
-      `/user/colegios/${params.colegio}/certificado/${params.year}/${params.id}/${params.uuid_accion}/${dataAccion.subdimensiones}`,
+      `/user/colegios/${params.name_colegio}/actividades/${params.year}/${params.id}/${params.uuid_accion}/${dataAccion.subdimensiones}`,
       {
         state: {
           actividad: data,
@@ -46,7 +45,7 @@ const Actividades = () => {
   return (
     <div className="px-3">
       <h1 className="font-bold text-2xl md:text-5xl text-center text-gray-600">
-        {params.colegio.toUpperCase()}
+        {params.name_colegio.toUpperCase()}
       </h1>
       <div className="grid grid-cols-1 mt-2">
         {/* <div className="my-3 mx-3 flex gap-2">
