@@ -236,6 +236,7 @@ const Recursos = () => {
       {
         state: {
           actividad: data.nombre_actividad,
+          descripcion_actividad: data.descripcion_actividad
         },
       }
     );

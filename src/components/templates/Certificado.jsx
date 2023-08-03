@@ -9,13 +9,21 @@ function Certificado() {
   const params = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const datito = location.state.actividad;
-  const [actividadPME, setActividadPME] = useState();
+  const datito = location.state;
+
+  const [actividadPME, setActividadPME] = useState({
+    actividad: "",
+    descripcion_actividad: "",
+  });
   const arraySubdimension = params.subdimension.split(",");
   const [dataAccion, setDataAccion] = useState([]);
   const [director, setDirector] = useState([]);
   const [modal, setModalVisible] = useState(false);
   const [load, setLoad] = useState(true);
+  const [mostrarActividad, setMostrarActividad] = useState(true);
+  const [mostrarDescripcionActividad, setMostrarDescripcionActividad] =
+    useState(true);
+
   const { data, error, loading } = useFetch(
     `accion/actividades/?uuid_accion=${params.uuid_accion}&id_pme=${params.id}&year=${params.year}`
   );
@@ -35,7 +43,11 @@ function Certificado() {
   useEffect(() => {
     if (data) {
       setDataAccion(data[0]);
-      setActividadPME(datito);
+      setActividadPME({
+        actividad: datito.actividad,
+        descripcion_actividad: datito.descripcion_actividad,
+      });
+      console.log(actividadPME);
     }
     axios
       .get(`${import.meta.env.VITE_API}/colegio/${params.name_colegio}`)
@@ -44,8 +56,25 @@ function Certificado() {
         setLoad(false);
       });
   }, [data]);
-  if (loading) return <h1>Loading..</h1>;
 
+  const hanldleChangePropiedadesActividad = (e) => {
+    const { name, value } = e.target;
+    setActividadPME({
+      ...actividadPME,
+      [name]: value,
+    });
+  };
+
+  const handleCheckBox = (e) => {
+    console.log(e.target.name);
+    if (e.target.name == "checkActividad") {
+      setMostrarActividad(!mostrarActividad);
+    } else {
+      setMostrarDescripcionActividad(!mostrarDescripcionActividad);
+    }
+  };
+
+  if (loading) return <h1>Loading..</h1>;
   const doc = new jsPDF("p", "pt", "letter", true, "UTF8");
   doc.setFont("helvetica");
   const handleClick = () => {
@@ -53,7 +82,7 @@ function Certificado() {
     const scale =
       (doc.internal.pageSize.width - margin * 2) / document.body.scrollWidth;
     doc.html(document.getElementById("paraPDF"), {
-      x: 100,
+      x: 50,
       y: 10,
       margin: [4, 4, 4, 4], // mm
       width: 380, // 216 = letter paper width in mm, 208 = less the 8mm margin
@@ -112,19 +141,55 @@ function Certificado() {
                     </h3>
                     <form className="space-y-6">
                       <div>
-                        <label className="block mb-2 text-sm font-medium text-white">
-                          Actividad
-                        </label>
+                        <div className="flex gap-2 items-center justify-between">
+                          <label className="block text-sm font-medium text-white">
+                            Actividad
+                          </label>
+                          <label className="block text-sm font-medium text-white">
+                            Ocultar Actividad
+                            <input
+                              type="checkbox"
+                              name="checkActividad"
+                              checked={mostrarActividad}
+                              onChange={handleCheckBox}
+                              className="mr-2"
+                            />
+                          </label>
+                        </div>
+
                         <textarea
                           name="actividad"
                           className="border outline-none p-1 bg-gray-500 text-white"
-                          defaultValue={actividadPME}
-                          onChange={(e) => setActividadPME(e.target.value)}
+                          defaultValue={actividadPME.actividad}
+                          onChange={hanldleChangePropiedadesActividad}
                           cols="110"
                           rows="3"
                         ></textarea>
                       </div>
-                      <div></div>
+                      <div>
+                        <div className="flex gap-2 items-center justify-between">
+                          <label className="block text-sm font-medium text-white">
+                            Descripción Actividad
+                          </label>
+                          <label className="block text-sm font-medium text-white">
+                            Ocultar Descripcion
+                            <input
+                              type="checkbox"
+                              checked={mostrarDescripcionActividad}
+                              onChange={handleCheckBox}
+                              className="mr-2"
+                            />
+                          </label>
+                        </div>
+                        <textarea
+                          name="descripcion_actividad"
+                          className="border outline-none p-1 bg-gray-500 text-white"
+                          defaultValue={actividadPME.descripcion_actividad}
+                          onChange={hanldleChangePropiedadesActividad}
+                          cols="110"
+                          rows="3"
+                        ></textarea>
+                      </div>
                       <button
                         type="submit"
                         onClick={closeModal}
@@ -163,7 +228,7 @@ function Certificado() {
         </div>
         <hr />
         <div
-          className="grid grid-col-10 max-w-[900px] m-auto p-3 mt-4 mb-4"
+          className="grid grid-col-10 max-w-[1200px] m-auto p-3 mt-4 mb-4"
           id="paraPDF"
           style={{ fontFamily: "Arial Unicode MS" }}
         >
@@ -200,7 +265,7 @@ function Certificado() {
             <h1 className="font-bold text-4xl text-center my-10">
               Certificado de Acción SEP
             </h1>
-            <div className="grid grid-cols-2 mt-3 text-2xl w-[820px] m-auto">
+            <div className="grid grid-cols-2 mt-3 text-2xl w-[1150px] m-auto">
               <div className="grid grid-cols-5 mt-7">
                 <label htmlFor="" className="text-start col-span-4">
                   Dimensión{" "}
@@ -244,14 +309,41 @@ function Certificado() {
                 <p>{dataAccion.descripcion}</p>
               </div>
               {actividadPME !== undefined ? (
-                <div className="grid grid-cols-2 mt-3 text-2xl w-[820px] m-auto">
-                  <div className="grid grid-cols-5 mt-7">
+                <div className="grid grid-cols-2 mt-3 text-2xl w-[1150px] m-auto">
+                  {/* agregar hidden si true quitar hidden false  */}
+                  <div
+                    className={
+                      mostrarActividad ? "grid grid-cols-5 mt-7" : "hidden"
+                    }
+                  >
                     <label htmlFor="" className="text-start col-span-4">
                       Actividad de la acción
                     </label>
                     <p className="text-end">:</p>
                   </div>
-                  <div className="mt-7 ml-2">{actividadPME}</div>
+                  <div className={mostrarActividad ? "mt-7 ml-2" : "hidden"}>
+                    {actividadPME.actividad}
+                  </div>
+
+                  <div
+                    className={
+                      mostrarDescripcionActividad
+                        ? "grid grid-cols-5 mt-7"
+                        : "hidden"
+                    }
+                  >
+                    <label htmlFor="" className="text-start col-span-4">
+                      Descripción de la actividad
+                    </label>
+                    <p className="text-end">:</p>
+                  </div>
+                  <div
+                    className={
+                      mostrarDescripcionActividad ? "mt-7 ml-2" : "hidden"
+                    }
+                  >
+                    {actividadPME.descripcion_actividad}
+                  </div>
                 </div>
               ) : (
                 <></>
