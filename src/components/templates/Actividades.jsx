@@ -27,7 +27,9 @@ const Actividades = () => {
       `/user/colegios/${params.name_colegio}/actividades/${params.year}/${params.id}/${params.uuid_accion}/${dataAccion.subdimensiones}`,
       {
         state: {
-          actividad: data,
+          actividad: data.nombre_actividad,
+          dimension: data.dimension,
+          descripcion_actividad:data.descripcion_actividad
         },
       }
     );
@@ -41,7 +43,6 @@ const Actividades = () => {
 
     setActividades(filtered);
   };
-
   return (
     <div className="px-3">
       <h1 className="font-bold text-2xl md:text-5xl text-center text-gray-600">
@@ -100,7 +101,7 @@ const Actividades = () => {
               </div>
               <div className="hidden md:flex md:gap-2 md:justify-end">
                 <button
-                  onClick={() => handleCertificadoClick(item.nombre_actividad)}
+                  onClick={() => handleCertificadoClick(item)}
                   className="bg-red-600 hover:bg-red-500 w-[150px] rounded-lg text-white"
                 >
                   Certificado

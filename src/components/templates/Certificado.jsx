@@ -273,7 +273,7 @@ function Certificado() {
                 <p className="text-end">:</p>
               </div>
               <div className="flex mt-7 ml-2">
-                <p>{dataAccion.dimension}</p>
+                <p>{datito.dimension}</p>
               </div>
               <div className="grid grid-cols-5 mt-7">
                 <label htmlFor="" className="text-start col-span-4">
