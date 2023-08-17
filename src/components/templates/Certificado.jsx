@@ -82,7 +82,7 @@ function Certificado() {
     const scale =
       (doc.internal.pageSize.width - margin * 2) / document.body.scrollWidth;
     doc.html(document.getElementById("paraPDF"), {
-      x: 50,
+      x: 30,
       y: 10,
       margin: [4, 4, 4, 4], // mm
       width: 380, // 216 = letter paper width in mm, 208 = less the 8mm margin
@@ -350,7 +350,10 @@ function Certificado() {
               )}
             </div>
           </div>
-          <div className="mt-16 flex justify-center my-40">
+          <div className="mt-24 flex justify-between">
+            <div className="flex justify-between my-6 px-[60px] text-2xl">
+              <p>Alto Hospicio</p>
+            </div>
             <div className="flex gap-5">
               <img
                 // DEBES MODIFICAR EL TAMAÑO DE LA IMAGEN, PASALO A JPG
@@ -372,10 +375,6 @@ function Certificado() {
                 </p>
               </div>
             </div>
-          </div>
-          <div className="flex justify-between my-6 px-[60px] text-2xl">
-            <p>Alto Hospicio</p>
-            <p>Firma Responsable</p>
           </div>
           <hr className="my-2" />
           <hr />
