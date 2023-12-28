@@ -10,9 +10,9 @@ services:
       - VIRTUAL_PORT=${VIRTUAL_PORT}
       - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
     ports:
-      - 8005:80
+      - 8086:80
 
 networks:
   default:
-    name: web_private_red_webapps
+    name: base_red_pme
     external: true
