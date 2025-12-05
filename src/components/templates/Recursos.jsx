@@ -74,11 +74,28 @@ const Recursos = () => {
   useEffect(() => {
     const storedData = localStorage.getItem("colegioInfo");
     const parseData = JSON.parse(storedData);
-    const res = async () => await getAcciones(parseData.pme._id);
+    
+    // Función para cargar acciones (esto estaba bien)
+    const res = async () => {
+        if(parseData && parseData.pme) {
+            await getAcciones(parseData.pme._id);
+        }
+    };
 
     if (data) {
-      setRecursos(data);
+      // --- LÓGICA ANTI-DUPLICADOS ---
+      // Usamos un Map o filter para dejar solo registros únicos.
+      // Aquí asumo que una actividad es única por su nombre y el UUID de su acción padre.
+      const uniqueData = data.filter((item, index, self) =>
+        index === self.findIndex((t) => (
+          t.nombre_actividad === item.nombre_actividad && 
+          t.uuid_accion === item.uuid_accion
+        ))
+      );
+      
+      setRecursos(uniqueData);
     }
+    
     res();
   }, [data]);
 
