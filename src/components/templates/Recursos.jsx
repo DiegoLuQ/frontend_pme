@@ -272,7 +272,7 @@ const Recursos = () => {
   return (
     <div className="w-full px-2 m-auto mt-2">
       <h1 className="font-bold text-2xl md:text-5xl text-center text-gray-600 mb-4">
-        Recursos de Actividades - {params.name_colegio}
+        -Recursos de Actividades - {params.name_colegio}
       </h1>
 
       <div className="bg-teal-700 p-2 flex flex-col gap-2 items-center justify-between md:flex md:flex-row rounded-xl">
